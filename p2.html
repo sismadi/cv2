@@ -1,10 +1,8 @@
  <video id="cam" autoplay></video> <canvas id="frame"></canvas>
-<script>
-
+<script> 
  mulaiKamera();
  
-  
-async function mulaiKamera() {
+ async function mulaiKamera() {
     const video = document.getElementById('cam');
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     video.srcObject = stream;
@@ -29,5 +27,4 @@ function rataKecerahan(imageData) {
     }
     return total / (d.length / 4);
 }
-
-  </script>
+     </script>
