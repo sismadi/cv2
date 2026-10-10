@@ -1,0 +1,30 @@
+ <video id="cam" autoplay></video> <canvas id="frame"></canvas>
+<script>
+  
+async function mulaiKamera() {
+    const video = document.getElementById('cam');
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+    await video.play();
+    return video;
+}
+
+function ambilFrame(video, canvas) {
+    const ctx = canvas.getContext('2d');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+    return ctx.getImageData(0, 0, canvas.width, canvas.height);
+}
+
+// Hitung rata-rata kecerahan
+function rataKecerahan(imageData) {
+    const d = imageData.data;
+    let total = 0;
+    for (let i = 0; i < d.length; i += 4) {
+        total += (d[i] + d[i + 1] + d[i + 2]) / 3;
+    }
+    return total / (d.length / 4);
+}
+
+  </script>
