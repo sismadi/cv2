@@ -1,0 +1,18 @@
+name = "ppm-worker"
+main = "src/index.js"
+compatibility_date = "2025-10-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ppm-db"
+database_id = "c17d1629-5676-46b0-8739-644daffcf8eb"
+
+# Frontend (public/index.html) disajikan dari Worker yang sama,
+# sehingga fetch('/api/...') satu origin. Hanya /api/* yang masuk ke Worker.
+[assets]
+directory = "./public"
+run_worker_first = ["/api/*"]
+
+[vars]
+# Isi dengan origin frontend jika dihosting terpisah, mis. "https://ppm.sismadi.com"
+ALLOWED_ORIGIN = "*"

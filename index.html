@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SIM-PPM LPPM Universitas IPWIJA</title>
+<style>
+:root{--hh:64px;--b9:#1c3f66;--b8:#2a5a8c;--b7:#3b74ab;--b6:#5c93c9;--b5:#8db8de;--b3:#bdd8f0;--b1:#e4f0fb;--b0:#f3f8fd;--ink:#1e2a34;--soft:#4a5a68;--line:#c7dbee;--ok:#1e7e34;--bad:#a4342a}
+*{box-sizing:border-box}body{margin:0;font:14px/1.45 "Segoe UI",Tahoma,Arial,sans-serif;color:var(--ink);background:var(--b0)}
+a{color:#1a56a0}button,input,select,textarea{font:inherit}
+.btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(#fff,var(--b1));border:1px solid var(--line);border-radius:3px;padding:7px 13px;cursor:pointer;color:var(--ink)}
+.btn:hover{background:var(--b1)}.btn.p{background:linear-gradient(var(--b6),var(--b8));color:#fff;border-color:var(--b9)}.btn.d{color:var(--bad);border-color:#e3b3ac}
+:focus-visible{outline:2px solid var(--b8);outline-offset:1px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 1px 3px rgba(20,50,80,.15)}
+.ph{margin:0;background:linear-gradient(var(--b3),var(--b5));color:var(--b9);font-weight:700;padding:10px 14px;border-radius:6px 6px 0 0;font-size:15px}
+.app{display:grid;grid-template-columns:220px 1fr;grid-template-areas:"top top" "side main";grid-template-rows:var(--hh) 1fr;min-height:100vh}
+.top{grid-area:top;background:linear-gradient(var(--b5),var(--b7));display:flex;justify-content:space-between;align-items:center;height:var(--hh);padding:0 20px;flex-wrap:nowrap;gap:12px;overflow:hidden;border-bottom:1px solid var(--b9)}
+.brand{font-size:22px;line-height:1.2;font-weight:700;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.25);min-width:0}.brand small{display:block;font-size:12px;line-height:1.3;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sess{color:var(--b9);font-size:13px;white-space:nowrap;flex:0 0 auto;min-height:1em}.sess a{color:var(--b9);font-weight:600}.sess b{font-weight:700}
+.side{grid-area:side;padding:14px}.side a{display:block;padding:10px 14px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--b1)}.side a:hover,.side a.on{background:var(--b1);font-weight:600}
+.main{grid-area:main;padding:14px 18px 40px;min-width:0}.body{padding:14px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px}table{width:100%;border-collapse:collapse;background:#fff}
+th{background:linear-gradient(var(--b1),var(--b3));text-align:left;padding:9px 11px;color:var(--b9);white-space:nowrap}td{padding:9px 11px;border-bottom:1px solid var(--b1);vertical-align:top}
+tr[data-id]{cursor:pointer}tbody tr:hover{background:var(--b0)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.bar input,.bar select{padding:7px 9px;border:1px solid var(--line);border-radius:3px}.bar input{flex:1 1 200px}
+.fg{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}.fg label{font-weight:600;color:var(--b9);font-size:13px}
+.fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid var(--line);border-radius:3px;width:100%}.fg small{color:var(--soft)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 14px}
+fieldset{border:1px solid var(--line);border-radius:6px;margin:0 0 14px;padding:10px 14px}legend{font-weight:700;color:var(--b9);padding:0 6px}
+.agr{display:grid;grid-template-columns:1.2fr 2fr 1fr 1.3fr 1.6fr auto;gap:8px;margin-bottom:8px}.agr>div{min-width:0}.agr>div>*{width:100%}.agr.dos [name=as],.agr.dos [name=ap]{pointer-events:none;background:var(--b1)}.agr small{display:block;color:var(--soft)}.agr input,.agr select{padding:7px;border:1px solid var(--line);border-radius:3px;min-width:0}
+.badge{display:inline-block;color:#fff;font-size:12px;padding:2px 9px;border-radius:12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:14px}.stat{padding:12px;text-align:center}.stat b{display:block;font-size:26px;color:var(--b9)}
+.ck{list-style:none;margin:0;padding:0}.ck li{padding:3px 0}.ck .ok::before{content:"✔ ";color:var(--ok)}.ck .no::before{content:"✘ ";color:var(--bad)}
+.scrim{display:none;position:fixed;inset:0;background:rgba(10,20,30,.45);z-index:90}.scrim.on{display:block}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:#fff;z-index:100;transform:translateX(100%);transition:transform .28s;display:flex;flex-direction:column;box-shadow:-6px 0 18px rgba(20,50,80,.28)}
+.dr.on{transform:none}.dr .ph{display:flex;justify-content:space-between;border-radius:0}.dr .db{padding:16px 18px;overflow-y:auto;flex:1}
+.dr h4{margin:14px 0 6px;color:var(--b9)}.dr p{margin:4px 0;white-space:pre-wrap}.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.auth{position:fixed;inset:0;z-index:200;background:linear-gradient(var(--b7),var(--b9));display:flex;align-items:center;justify-content:center;padding:20px}.auth[hidden]{display:none}.auth .panel{width:min(360px,100%)}.auth form{padding:18px}
+.msg{padding:9px 13px;border-radius:6px;margin-bottom:12px;font-weight:600;background:#fbeceb;color:var(--bad);border:1px solid #e3b3ac}.msg.ok{background:#e6f4ea;color:var(--ok);border-color:#b7dfc2}
+.btn.sm{padding:3px 9px;font-size:12px}.btn:disabled{opacity:.4;cursor:default}tr.off td{color:#8a97a3}td.act{white-space:nowrap}
+#pa{display:none}
+.md{position:fixed;inset:0;z-index:300;background:rgba(10,20,30,.55);display:flex;align-items:center;justify-content:center;padding:20px}.md[hidden]{display:none}.md .panel{width:min(440px,100%)}.md .body p{white-space:pre-wrap}
+@media print{body>*:not(#pa){display:none!important}#pa{display:block}#pa td{border:1px solid #999;padding:5px}}
+@media(max-width:768px){.app{grid-template-columns:1fr;grid-template-areas:"top" "side" "main";grid-template-rows:var(--hh) auto 1fr}.top{padding:0 12px}.sess{font-size:12px}.sess .wl{display:none}.sess b{display:inline-block;max-width:110px;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}.side{display:flex;overflow-x:auto;padding:0}.side a{white-space:nowrap}.g2,.g3,.agr{grid-template-columns:1fr}}
+</style></head><body>
+
+<div class="auth" id="auth"><div class="panel"><h2 class="ph">Masuk ke SIM-PPM</h2>
+<form id="lf"><div class="fg"><label>Username</label><input id="lu" required autocomplete="username"></div>
+<div class="fg"><label>Password</label><input id="lp" type="password" required autocomplete="current-password"></div>
+<p class="msg" id="le" hidden></p><button class="btn p" style="width:100%;justify-content:center">Masuk</button>
+<p><small>Akun demo: <b>wawan</b>/wawan123 (admin LPPM), <b>dosen</b>/dosen123, <b>reviewer</b>/reviewer123</small></p></form></div></div>
+
+<div class="app">
+<header class="top"><div class="brand">SIM-PPM<small>LPPM Universitas IPWIJA · Usulan Penelitian &amp; Pengabdian</small></div><div class="sess" id="sess"></div></header>
+<nav class="side panel" id="side"></nav>
+<main class="main"><section class="panel"><h1 class="ph" id="pt"></h1><div class="body" id="v"></div></section></main>
+</div>
+<div class="scrim" id="scrim" onclick="closeDr()"></div>
+<aside class="dr" id="dr"><div class="ph"><span id="dt">Detail</span><button class="btn" onclick="closeDr()">✕</button></div><div class="db" id="db"></div></aside>
+<div id="pa"></div>
+<div class="md" id="md" hidden></div>
+
+<script>
+/* ===== 1. SKEMA (config dari Pedoman PPM UNIP 2023). Ubah di sini jika pedoman berubah ===== */
+const lvl=p=>({S1:1,S2:2,S3:3})[p]||0, JAB=['','Asisten Ahli','Lektor','Lektor Kepala','Guru Besar'];
+const BAB={
+ std:[['pendahuluan','Bab 1. Pendahuluan'],['pustaka','Bab 2. Tinjauan Pustaka (state of the art, road map)'],['metode','Bab 3. Metode Penelitian (bagan alir, indikator capaian)']],
+ pra:[['pendahuluan','Bab 1. Pendahuluan'],['bisnis','Bab 2. Gambaran Proses Bisnis'],['metode','Bab 3. Metode (bagan alir + Business Model Canvas)']],
+ pkm:[['pendahuluan','Bab 1. Pendahuluan (analisis situasi, permasalahan mitra, tujuan, manfaat)'],['solusi','Bab 2. Solusi dan Target Luaran'],['metode','Bab 3. Metode Pelaksanaan'],['personalia','Bab 4. Personalia Pengusul dan Keahlian']]};
+const RKP=['Ringkasan (maks. 1 halaman)',0],RK500=['Ringkasan (maks. 500 kata, maks. 5 kata kunci)',500],ABS=['Abstrak (maks. 200 kata)',200];
+/* ag=[min,max] anggota di luar ketua. Pengabdian: tim 2–4 orang termasuk ketua => anggota 1–3 */
+const SK={
+ pdp:{n:'Penelitian Dosen Pemula',j:'penelitian',tkt:'1–3',dur:'Maks. 2 semester',ag:[1,2],mhs:1,mitra:0,sampul:'putih',dana:6e6,bab:'std',rk:RKP,ref:'Sistem nama–tahun, urut abjad',
+  kt:k=>lvl(k.pend)<=2&&['','Asisten Ahli'].includes(k.jab),kts:'maks. S2 dan maks. Asisten Ahli / belum berjabatan fungsional',
+  lu:['1 artikel prosiding/jurnal nasional min. SINTA 4','1 artikel dipresentasikan di pertemuan ilmiah LPPM']},
+ pd:{n:'Penelitian Dasar',j:'penelitian',tkt:'1–3',dur:'6 bulan',ag:[0,2],mhs:1,mitra:0,sampul:'kuning',bab:'std',rk:RKP,ref:'Sistem nama–tahun, urut abjad',
+  kt:k=>lvl(k.pend)>=2,kts:'min. S2',lu:['1 artikel prosiding nasional (SINTA 3–4)','1 artikel dipresentasikan di pertemuan ilmiah LPPM']},
+ pt:{n:'Penelitian Terapan',j:'penelitian',tkt:'3–6',dur:'6 bulan',ag:[0,3],mhs:2,mitra:0,sampul:'hijau',bab:'std',rk:RK500,ref:'Sistem nomor sesuai urutan pengutipan',
+  kt:k=>lvl(k.pend)==3||(lvl(k.pend)==2&&k.jab=='Lektor Kepala'),kts:'S3, atau S2 dengan jabatan Lektor Kepala',
+  lu:['1 produk iptek-sosbud terdaftar di LPPM (dilindungi KI)','1 artikel jurnal internasional Scopus/SINTA 1–2','1 artikel dipresentasikan di pertemuan ilmiah LPPM']},
+ pin:{n:'Penelitian Inovasi',j:'penelitian',tkt:'3–5',dur:'6 bulan',ag:[1,3],mhs:2,mitra:1,sampul:'merah',bab:'std',rk:RKP,ref:'Sistem nama–tahun, urut abjad',
+  kt:k=>lvl(k.pend)>=2,kts:'min. S2',lu:['Produk inovasi','1 artikel prosiding internasional bereputasi / nasional (SINTA 1–4)','1 draft paten sederhana terdaftar di LPPM','Video pelaksanaan min. 3 menit']},
+ pps:{n:'Penelitian Pascasarjana',j:'penelitian',tkt:'tidak merujuk TKT',dur:'6 bulan',ag:[1,1],mhs:1,mitra:0,sampul:'merah tua',bab:'std',rk:RK500,ref:'Sistem nama–tahun, 10 tahun terakhir',
+  kt:k=>lvl(k.pend)==3,kts:'S3 (anggota: 1 dosen S3; mahasiswa: 1 mahasiswa pascasarjana bimbingan)',
+  lu:['Surat keterangan seminar hasil dari Program Pascasarjana','1 artikel accepted Scopus / nasional SINTA 1–4','1 artikel dipresentasikan di pertemuan ilmiah LPPM']},
+ prof:{n:'Penelitian Professorship',j:'penelitian',tkt:'3–6',dur:'6 bulan',ag:[3,3],mhs:2,mitra:0,sampul:'biru tua',bab:'std',rk:RKP,ref:'Sistem nomor, gaya APA v6',
+  kt:k=>lvl(k.pend)==3&&k.jab!='Guru Besar',kts:'S3 dan belum Guru Besar (anggota: 2 dosen S3 non-GB + 1 Guru Besar)',
+  lu:['1 artikel accepted jurnal internasional min. Scopus Q3','1 artikel dipresentasikan di pertemuan ilmiah LPPM']},
+ pra:{n:'Penelitian Pra-Startup',j:'penelitian',tkt:'7–8',dur:'6 bulan',ag:[1,3],mhs:2,mitra:1,sampul:'jingga',bab:'pra',rk:RKP,ref:'Sistem nama–tahun, urut abjad',
+  kt:()=>true,kts:'dosen Universitas IPWIJA (anggota boleh dosen/tendik)',lu:['Produk layak pasar (bermerek, draft paten sederhana terdaftar)','Business plan','Action plan']},
+ pkmp:{n:'PKM Dosen Pemula',j:'pengabdian',tkt:'—',dur:'6 bulan',ag:[1,3],mhs:1,mitra:0,sampul:'biru muda',bab:'pkm',rk:ABS,ref:'Harvard',
+  kt:()=>true,kts:'dosen Universitas IPWIJA; tim 2–4 dosen',lu:['Laporan akhir pengabdian','Cover, surat permohonan, surat tugas, materi, surat terima kasih','Dokumentasi kegiatan']},
+ pkmu:{n:'PKM Unggulan',j:'pengabdian',tkt:'—',dur:'6 bulan',ag:[1,3],mhs:1,mitra:0,sampul:'ungu',bab:'pkm',rk:ABS,ref:'Harvard',
+  kt:()=>true,kts:'dosen Universitas IPWIJA; tim 2–4 dosen',lu:['1 artikel accepted jurnal PKM','1 artikel dipresentasikan di pertemuan ilmiah LPPM','Video kegiatan min. 5 menit']},
+ pkmdb:{n:'PKM Desa Binaan',j:'pengabdian',tkt:'—',dur:'6 bulan',ag:[1,3],mhs:1,mitra:1,sampul:'coklat',bab:'pkm',rk:ABS,ref:'Harvard',
+  kt:k=>lvl(k.pend)==3||(lvl(k.pend)==2&&k.jab=='Lektor'),kts:'S3, atau S2 dengan jabatan Lektor (mitra: desa yang ditetapkan LPPM)',
+  lu:['1 artikel jurnal PKM','Publikasi media cetak/online','Video kegiatan min. 5 menit']}};
+const RAB=[['alat','Pengadaan alat dan bahan'],['jalan','Biaya perjalanan'],['atk','Alat tulis kantor / bahan habis pakai'],['lap','Laporan / diseminasi / publikasi']];
+const ST={draft:['Draft','#6b7a88'],diajukan:['Diajukan','#3b74ab'],review:['Direview','#b7791f'],dikembalikan:['Dikembalikan','#a4342a'],kontrak:['Kontrak','#2a7f62'],pelaksanaan:['Pelaksanaan','#2a5a8c'],laporan:['Laporan','#6b46c1'],diseminasi:['Diseminasi','#6b46c1'],luaran:['Luaran','#2a7f62'],selesai:['Selesai','#1e7e34']};
+const TSYARAT=['Proposal lolos & revisi diserahkan','Laporan akhir diserahkan & diseminasi','Bukti publikasi luaran'];
+
+/* ===== 2. DATABASE: adapter tunggal. Skema SQL kompatibel SQLite = Cloudflare D1 ===== */
+const TABLES=['users','proposal','anggota','review','termin','opsi'];
+const SCHEMA_SQL=`-- Kompatibel SQLite / Cloudflare D1. Jalankan: wrangler d1 execute <DB> --file=schema.sql
+CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,username TEXT UNIQUE NOT NULL,password TEXT NOT NULL /* DEMO plaintext: ganti hash di D1 */,nama TEXT,role TEXT CHECK(role IN('dosen','reviewer','admin')),email TEXT,hp TEXT,nidn TEXT,sinta TEXT,pend TEXT,jab TEXT,prodi TEXT,aktif INTEGER DEFAULT 1);
+CREATE TABLE IF NOT EXISTS proposal(id TEXT PRIMARY KEY,skema TEXT NOT NULL,judul TEXT NOT NULL,tahun INTEGER,semester TEXT,ketua_id TEXT REFERENCES users(id),status TEXT DEFAULT 'draft',mitra TEXT,jml_mahasiswa INTEGER,anggaran REAL,isi TEXT /* JSON: ketua, ringkasan, bab, rab, jadwal, referensi */,created_at TEXT,updated_at TEXT);
+CREATE TABLE IF NOT EXISTS anggota(id TEXT PRIMARY KEY,proposal_id TEXT REFERENCES proposal(id) ON DELETE CASCADE,nama TEXT,sinta TEXT,prodi TEXT,tugas TEXT,jenis TEXT DEFAULT 'dosen' CHECK(jenis IN('dosen','non')),user_id TEXT REFERENCES users(id) /* terisi jika dosen terdaftar */,status TEXT /* menunggu|setuju|tolak (dosen), kosong (non-dosen) */,alasan TEXT,tanggal TEXT);
+CREATE TABLE IF NOT EXISTS review(id TEXT PRIMARY KEY,proposal_id TEXT REFERENCES proposal(id) ON DELETE CASCADE,reviewer_id TEXT,skor REAL,rekomendasi TEXT,catatan TEXT,created_at TEXT);
+CREATE TABLE IF NOT EXISTS termin(id TEXT PRIMARY KEY,proposal_id TEXT REFERENCES proposal(id) ON DELETE CASCADE,termin INTEGER,persen REAL,jumlah REAL,status TEXT DEFAULT 'menunggu',tanggal TEXT);
+CREATE TABLE IF NOT EXISTS opsi(id TEXT PRIMARY KEY,kategori TEXT NOT NULL,nilai TEXT NOT NULL,urut INTEGER DEFAULT 0,aktif INTEGER DEFAULT 1,UNIQUE(kategori,nilai));
+CREATE INDEX IF NOT EXISTS ix_prop_ketua ON proposal(ketua_id);CREATE INDEX IF NOT EXISTS ix_ang_prop ON anggota(proposal_id);CREATE INDEX IF NOT EXISTS ix_ang_user ON anggota(user_id);`;
+/* Antarmuka adapter: open() all(t) put(t,row) del(t,id). Ganti `const DB=IDB` -> `D1` saat siap. */
+const IDB={db:null,
+ open(){return new Promise((ok,no)=>{const r=indexedDB.open('ppm_lppm',2);r.onupgradeneeded=()=>TABLES.forEach(t=>{if(!r.result.objectStoreNames.contains(t))r.result.createObjectStore(t,{keyPath:'id'})});r.onsuccess=()=>{this.db=r.result;ok()};r.onerror=()=>no(r.error)})},
+ tx(t,m,f){return new Promise((ok,no)=>{const q=f(this.db.transaction(t,m).objectStore(t));q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})},
+ all(t){return this.tx(t,'readonly',s=>s.getAll())},put(t,r){return this.tx(t,'readwrite',s=>s.put(r))},del(t,id){return this.tx(t,'readwrite',s=>s.delete(id))},
+ reset(){return new Promise(ok=>{this.db.close();const r=indexedDB.deleteDatabase('ppm_lppm');r.onsuccess=r.onerror=r.onblocked=ok})}};
+const D1={base:'/api',async open(){},
+ async all(t){return(await fetch(`${this.base}/${t}`)).json()},
+ async put(t,r){await fetch(`${this.base}/${t}`,{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(r)})},
+ async del(t,id){await fetch(`${this.base}/${t}/${id}`,{method:'DELETE'})}};
+const DB=D1;
+let C={},U=null;
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const load=async()=>{for(const t of TABLES)C[t]=await DB.all(t)};
+const save=async(t,r)=>{await DB.put(t,r);const a=C[t],i=a.findIndex(x=>x.id===r.id);i<0?a.push(r):a[i]=r};
+const rm=async(t,id)=>{await DB.del(t,id);C[t]=C[t].filter(x=>x.id!==id)};
+async function seed(){if(!C.users.length)for(const [u,p,n,r] of [['wawan','wawan123','Wawan Sismadi','admin'],['dosen','dosen123','Dosen Contoh','dosen'],['reviewer','reviewer123','Reviewer LPPM','reviewer']])await save('users',{id:uid(),username:u,password:p,nama:n,role:r,aktif:1});await seedOpsi()}
+
+/* ===== 3. Util & logika domain ===== */
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* Modal form in-app: satu komponen untuk konfirmasi, peringatan, dan input. Resolve(null)=batal, resolve(objek field)=OK */
+const modal=({t,html='',ok='Simpan',d=0,x=1,chk})=>new Promise(res=>{const m=$('#md');
+ m.innerHTML=`<form class="panel" autocomplete="off"><h2 class="ph">${esc(t)}</h2><div class="body"><p class="msg" id="mm" hidden></p>${html}<div class="acts"><button class="btn ${d?'d':'p'}">${esc(ok)}</button>${x?'<button type="button" class="btn" data-x>Batal</button>':''}</div></div></form>`;
+ m.hidden=false;const f=m.firstChild,end=v=>{m.hidden=true;m.innerHTML='';m.onkeydown=null;res(v)};
+ f.onsubmit=e=>{e.preventDefault();const v=Object.fromEntries(new FormData(f)),er=chk&&chk(v);if(er)return note('mm',er);end(v)};
+ m.onkeydown=e=>e.key==='Escape'&&end(null);const c=f.querySelector('[data-x]');if(c)c.onclick=()=>end(null);
+ (f.querySelector('input,select,textarea')||f.querySelector('button')).focus()});
+const sure=(text,ok='Ya, lanjutkan')=>modal({t:'Konfirmasi',html:`<p>${esc(text)}</p>`,ok,d:1}).then(Boolean);
+const warn=text=>modal({t:'Perhatian',html:`<p>${esc(text)}</p>`,ok:'OK',x:0});
+const rp=n=>'Rp '+Number(n||0).toLocaleString('id-ID'),wc=s=>((s||'').trim().match(/\S+/g)||[]).length;
+const full=id=>{const r=C.proposal.find(x=>x.id===id);return r&&{...r,isi:JSON.parse(r.isi||'{}'),ag:C.anggota.filter(a=>a.proposal_id===id)}};
+const chip=(m,s)=>`<span class="badge" style="background:${m[s][1]}">${m[s][0]}</span>`,badge=s=>chip(ST,s),AST={menunggu:['Menunggu','#b7791f'],setuju:['Disetujui','#1e7e34'],tolak:['Ditolak','#a4342a']};
+const isA=()=>U.role==='admin',owner=p=>p.ketua_id===U.id||isA();
+function check(p){const s=SK[p.skema],i=p.isi,k=i.ketua||{},c=[],a=(o,t)=>c.push([!!o,t]);
+ a(s.kt(k),'Ketua: '+s.kts);a(k.sinta,'Ketua memiliki SINTA ID');
+ a(p.ag.length>=s.ag[0]&&p.ag.length<=s.ag[1],`Anggota ${s.ag[0]}–${s.ag[1]} orang (terisi ${p.ag.length})`);
+ a(p.ag.every(x=>x.nama&&(x.sinta||x.jenis==='non')),'Semua anggota bernama; anggota dosen memiliki SINTA ID');const dm=p.ag.filter(x=>x.user_id);if(dm.length)a(dm.every(x=>x.status==='setuju'),`Anggota dosen menyetujui keanggotaan (${dm.filter(x=>x.status==='setuju').length}/${dm.length})`);a(p.ag.every(x=>x.tugas)&&k.tugas,'Pembagian tugas ketua & anggota jelas');
+ a(p.jml_mahasiswa>=s.mhs,`Melibatkan min. ${s.mhs} mahasiswa aktif`);if(s.mitra)a(p.mitra,'Mitra tercantum (lampirkan surat persetujuan mitra)');
+ a(wc(i.ringkasan)&&(!s.rk[1]||wc(i.ringkasan)<=s.rk[1]),s.rk[0]+' terisi'+(s.rk[1]?` (${wc(i.ringkasan)} kata)`:''));
+ BAB[s.bab].forEach(([x,l])=>a(wc(i.bab?.[x]),l.split('(')[0].trim()+' terisi'));
+ a(p.anggaran>0,'Rencana anggaran biaya terisi');if(s.dana)a(p.anggaran==s.dana,`Total anggaran = ${rp(s.dana)} (skema ini)`);
+ a(wc(i.jadwal),'Jadwal kegiatan (bar chart) terisi');a(wc(i.referensi),'Referensi terisi ('+s.ref+')');return c}
+/* Anggota: dosen terdaftar (user_id, perlu persetujuan) atau non-dosen (manual). */
+const inv=()=>C.anggota.filter(a=>a.user_id===U.id).map(a=>({a,p:C.proposal.find(x=>x.id===a.proposal_id)})).filter(x=>x.p),
+ canRespond=p=>['draft','dikembalikan'].includes(p.status),pendN=()=>inv().filter(x=>x.a.status==='menunggu'&&canRespond(x.p)).length,
+ dosenOpts=(kid,cur)=>C.users.filter(u=>u.id===cur||(u.role==='dosen'&&u.aktif!==0&&u.id!==kid)),
+ mem=(a,prev)=>{const o=a.user_id&&prev.find(x=>x.user_id===a.user_id);return{...a,id:o?.id||uid(),status:a.user_id?(o?.status||'menunggu'):'',alasan:o?.alasan||'',tanggal:o?.tanggal||''}},
+ setSel=(e,v)=>{if(v&&![...e.options].some(o=>o.value===v))e.add(new Option(v,v));e.value=v},
+ syncAng=async u=>{for(const a of C.anggota.filter(x=>x.user_id===u.id))await save('anggota',{...a,nama:u.nama,sinta:u.sinta||'',prodi:u.prodi||''})};
+const kuota=p=>C.proposal.some(x=>x.id!==p.id&&x.ketua_id===p.ketua_id&&x.tahun==p.tahun&&x.semester==p.semester&&SK[x.skema].j===SK[p.skema].j&&!['draft','dikembalikan'].includes(x.status));
+
+/* ===== 4. Navigasi & tampilan ===== */
+const MENU={dosen:[['home','Beranda'],['list','Proposal Saya'],['appr','Persetujuan Anggota'],['form','Buat Proposal'],['guide','Panduan Skema'],['profil','Profil Saya']],
+ reviewer:[['home','Beranda'],['list','Proposal Masuk'],['guide','Panduan Skema'],['profil','Profil Saya']],
+ admin:[['home','Beranda'],['list','Semua Proposal'],['form','Buat Proposal'],['fund','Pendanaan'],['guide','Panduan Skema'],['users','Kelola Pengguna'],['master','Master Data'],['profil','Profil Saya'],['dbv','Basis Data']]};
+let cur='home',q={s:'',k:'',st:''};
+function go(v,id){if(!MENU[U.role].some(m=>m[0]==v))v='home';cur=v;closeDr();$('#side').innerHTML=MENU[U.role].map(([k,l])=>`<a href="#" class="${k==v?'on':''}" onclick="go('${k}');return false">${l}${k=='appr'&&pendN()?` <span class="badge" style="background:#b7791f">${pendN()}</span>`:''}</a>`).join('');
+ const T={home:'Beranda',list:'Daftar Proposal',appr:'Persetujuan Anggota',form:id?'Ubah Proposal':'Buat Proposal',fund:'Pendanaan Termin',guide:'Panduan Skema',dbv:'Basis Data',profil:'Profil Saya',users:'Kelola Pengguna',master:'Master Data & Opsi'};$('#pt').textContent=T[v];
+ $('#v').innerHTML=({home,list,appr,form:()=>formV(id),fund,guide,dbv,profil,users,master})[v]()}
+const vis=()=>C.proposal.filter(p=>U.role==='dosen'?p.ketua_id===U.id||C.anggota.some(a=>a.proposal_id===p.id&&a.user_id===U.id):U.role==='reviewer'?p.status!=='draft':true);
+function home(){const v=vis(),n=s=>v.filter(p=>p.status===s).length;
+ return `${U.role==='dosen'&&pendN()?`<p class="msg ok">Anda memiliki ${pendN()} undangan anggota yang menunggu tanggapan. <a href="#" onclick="go('appr');return false">Lihat</a></p>`:''}<div class="stats">${Object.keys(ST).map(s=>`<div class="panel stat"><b>${n(s)}</b>${ST[s][0]}</div>`).join('')}</div>
+ <h3>Alur proses (Pedoman PPM)</h3><ol><li>Ketua menyusun proposal sesuai skema; anggota dosen terdaftar menyetujui keanggotaan, lalu ketua mengajukan</li><li>LPPM seleksi awal, lalu reviewer menilai</li><li>Layak → kontrak &amp; termin 1 (25%)</li><li>Pelaksanaan, monev, laporan akhir</li><li>Diseminasi hasil → termin 2 (35%)</li><li>Luaran dipublikasikan → termin 3 (40%) → selesai</li></ol>
+ <p>Batas pengusulan: maks. 1 proposal penelitian dan 1 pengabdian sebagai ketua per semester.</p>`}
+function list(){const v=vis().filter(p=>(!q.k||p.skema===q.k)&&(!q.st||p.status===q.st)&&(!q.s||(p.judul+JSON.parse(p.isi).ketua?.nama).toLowerCase().includes(q.s.toLowerCase())));
+ return `<form class="bar" onsubmit="return false"><input placeholder="Cari judul / ketua…" value="${esc(q.s)}" oninput="q.s=this.value;rl()"><select onchange="q.k=this.value;rl()"><option value="">Semua skema</option>${Object.entries(SK).map(([k,s])=>`<option value="${k}" ${q.k==k?'selected':''}>${s.n}</option>`).join('')}</select>
+ <select onchange="q.st=this.value;rl()"><option value="">Semua status</option>${Object.entries(ST).map(([k,s])=>`<option value="${k}" ${q.st==k?'selected':''}>${s[0]}</option>`).join('')}</select>${U.role!=='reviewer'?'<button class="btn p" onclick="go(\'form\')">+ Buat Proposal</button>':''}<span>Jumlah: ${v.length}</span></form>
+ <div class="tw"><table><thead><tr><th>Judul</th><th>Skema</th><th>Ketua</th><th>Tahun</th><th>Anggaran</th><th>Status</th></tr></thead><tbody>${v.length?v.map(p=>`<tr data-id="${p.id}" onclick="detail('${p.id}')"><td>${esc(p.judul)}</td><td>${SK[p.skema].n}</td><td>${esc(JSON.parse(p.isi).ketua?.nama)}</td><td>${p.tahun} ${p.semester}</td><td>${rp(p.anggaran)}</td><td>${badge(p.status)}</td></tr>`).join(''):'<tr><td colspan=6>Belum ada proposal. Klik “Buat Proposal”.</td></tr>'}</tbody></table></div>`}
+const rerender=fn=>{const f=document.activeElement,pos=f.selectionStart;$('#v').innerHTML=fn();const i=$('#v input');if(f.tagName=='INPUT'){i.focus();i.setSelectionRange(pos,pos)}},rl=()=>rerender(list),ru=()=>rerender(users);
+function guide(){return `<div class="tw"><table><thead><tr><th>Skema</th><th>Jenis</th><th>TKT</th><th>Durasi</th><th>Syarat ketua</th><th>Anggota</th><th>Mhs</th><th>Sampul</th><th>Luaran wajib</th></tr></thead><tbody>${Object.values(SK).map(s=>`<tr><td><b>${s.n}</b>${s.dana?'<br>'+rp(s.dana):''}</td><td>${s.j}</td><td>${s.tkt}</td><td>${s.dur}</td><td>${s.kts}</td><td>${s.ag[0]}–${s.ag[1]}</td><td>≥${s.mhs}</td><td>${s.sampul}</td><td>${s.lu.map(esc).join('; ')}</td></tr>`).join('')}</tbody></table></div>
+ <p>Format usulan: maks. 20 halaman (di luar sampul &amp; daftar isi), Times New Roman 12, spasi 1,5 (ringkasan 1 spasi), A4. Pendanaan bertahap 25% / 35% / 40%.</p>`}
+
+/* ---- Persetujuan anggota ---- */
+function appr(){const l=inv();return `<p>Undangan sebagai anggota tim usulan. Tanggapan dapat diubah selama proposal masih berstatus draft atau dikembalikan.</p><div class="tw"><table><thead><tr><th>Judul</th><th>Skema</th><th>Ketua</th><th>Tugas Anda</th><th>Status proposal</th><th>Persetujuan</th><th></th></tr></thead><tbody>${l.length?l.map(({a,p})=>`<tr data-id="${p.id}" onclick="detail('${p.id}')"><td>${esc(p.judul)}</td><td>${SK[p.skema].n}</td><td>${esc(iso(p).ketua?.nama)}</td><td>${esc(a.tugas)}</td><td>${badge(p.status)}</td><td>${chip(AST,a.status||'menunggu')}${a.alasan?`<br><small>${esc(a.alasan)}</small>`:''}</td><td class="act">${canRespond(p)?`<button class="btn sm p" onclick="event.stopPropagation();respon('${a.id}')">Tanggapi</button>`:''}</td></tr>`).join(''):'<tr><td colspan=7>Belum ada undangan.</td></tr>'}</tbody></table></div>`}
+async function respon(aid){const a=C.anggota.find(x=>x.id===aid),p=a&&C.proposal.find(x=>x.id===a.proposal_id);
+ if(!a||a.user_id!==U.id)return warn('Undangan ini bukan untuk Anda.');if(!canRespond(p))return warn('Proposal sudah diajukan; tanggapan tidak dapat diubah.');
+ const d=await modal({t:'Tanggapi undangan anggota',ok:'Kirim tanggapan',html:`<p><b>${esc(p.judul)}</b><br>Tugas Anda: ${esc(a.tugas||'–')}</p><div class="fg"><label>Keputusan</label>${fs('k',['Setuju','Tolak'],a.status==='tolak'?'Tolak':'Setuju')}</div>${ta('Catatan / alasan (wajib jika menolak)','alasan',a.alasan,3)}`,chk:x=>x.k==='Tolak'&&!x.alasan.trim()?'Isi alasan penolakan.':''});
+ if(!d)return;await save('anggota',{...a,status:d.k==='Setuju'?'setuju':'tolak',alasan:d.alasan.trim(),tanggal:new Date().toISOString().slice(0,10)});rf(p.id)}
+
+/* ---- Form proposal (dinamis menurut skema) ---- */
+const inp=(l,n,v,t='text',x='')=>`<div class="fg"><label>${l}</label><input name="${n}" type="${t}" value="${esc(v)}" ${x}></div>`;
+const ta=(l,n,v,r=5,h='')=>`<div class="fg"><label>${l}</label><textarea name="${n}" rows="${r}">${esc(v)}</textarea>${h?`<small>${h}</small>`:''}</div>`;
+const agRow=(a,kid)=>{const d=(a.jenis||(a.nama?'non':'dosen'))==='dosen';
+ return `<div class="agr ${d?'dos':''}"><div><select name="aj" onchange="agJ(this)"><option value="dosen" ${d?'selected':''}>Dosen terdaftar</option><option value="non" ${d?'':'selected'}>Non-dosen (manual)</option></select>${a.user_id?`<small>Persetujuan: ${AST[a.status||'menunggu'][0]}</small>`:''}</div>
+ <div><select name="au" onchange="agU(this)" ${d?'':'hidden'}><option value="">— pilih dosen —</option>${dosenOpts(kid,a.user_id).map(u=>`<option value="${u.id}" ${u.id==a.user_id?'selected':''}>${esc(u.nama)}</option>`).join('')}</select><input name="an" placeholder="Nama lengkap" value="${esc(a.nama)}" ${d?'hidden':''}></div>
+ <input name="as" placeholder="SINTA ID" value="${esc(a.sinta)}" ${d?'readonly':''}>${osel('ap','prodi',a.prodi,'Prodi')}<input name="at" placeholder="Tugas" value="${esc(a.tugas)}"><button type="button" class="btn d" onclick="this.parentNode.remove()">✕</button></div>`},
+ agJ=e=>{const r=e.closest('.agr'),d=e.value==='dosen',q=n=>r.querySelector(`[name=${n}]`);r.classList.toggle('dos',d);q('au').hidden=!d;q('an').hidden=d;q('as').readOnly=d;if(!d)q('au').value=''},
+ agU=e=>{const r=e.closest('.agr'),u=C.users.find(x=>x.id===e.value)||{},q=n=>r.querySelector(`[name=${n}]`);q('an').value=u.nama||'';q('as').value=u.sinta||'';setSel(q('ap'),u.prodi||'')};
+function formV(id){const ex=id&&full(id);
+ const d=window._d||(ex||{skema:'pdp',judul:'',tahun:2026,semester:'Ganjil',jml_mahasiswa:1,mitra:'',ag:[{}],isi:{ketua:{nama:U.nama,pend:U.pend||'S2',jab:U.jab||'',sinta:U.sinta||'',hp:U.hp||'',email:U.email||'',prodi:U.prodi||''},rab:{},bab:{}}});window._d=null;window._id=id||null;
+ const s=SK[d.skema],i=d.isi,k=i.ketua||{},sel=fs,kid=(id&&C.proposal.find(x=>x.id===id)||{ketua_id:U.id}).ketua_id;
+ return `<form id="f" onsubmit="return false"><p class="msg" id="fm" hidden></p>
+ <fieldset><legend>Identitas usulan</legend><div class="g2"><div class="fg"><label>Skema</label><select name="skema" onchange="rs()">${Object.entries(SK).map(([x,y])=>`<option value="${x}" ${x==d.skema?'selected':''}>${y.n}</option>`).join('')}</select><small>${s.j}, TKT ${s.tkt}, durasi ${s.dur}</small></div>
+ ${inp('Judul','judul',d.judul)}</div><div class="g3"><div class="fg"><label>Tahun</label>${osel('tahun','tahun',d.tahun)}</div><div class="fg"><label>Semester</label>${osel('semester','semester',d.semester)}</div><div class="fg"><label>Program studi</label>${osel('prodi','prodi',k.prodi,'— pilih —')}</div></div></fieldset>
+ <fieldset><legend>Ketua pengusul</legend><div class="g3">${inp('Nama lengkap','kn',k.nama)}<div class="fg"><label>Pendidikan</label>${sel('kp',['S1','S2','S3'],k.pend)}</div><div class="fg"><label>Jabatan fungsional</label>${sel('kj',JAB,k.jab)}</div>${inp('SINTA ID','ks',k.sinta)}${inp('No. HP','kh',k.hp)}${inp('Email','ke',k.email,'email')}</div>${inp('Tugas ketua','kt',k.tugas)}<small>Syarat: ${s.kts}</small></fieldset>
+ <fieldset><legend>Anggota (${s.ag[0]}–${s.ag[1]} orang)</legend><p><small>Dosen dipilih dari dosen terdaftar dan harus menyetujui keanggotaan. Anggota non-dosen (tendik, praktisi, dll.) diisi manual.</small></p><div id="ag">${d.ag.map(a=>agRow(a,kid)).join('')}</div><button type="button" class="btn" onclick="$('#ag').insertAdjacentHTML('beforeend',agRow({},'${kid}'))">+ Anggota</button>
+ <div class="g3" style="margin-top:10px">${inp('Jumlah mahasiswa terlibat (min. '+s.mhs+')','jm',d.jml_mahasiswa,'number')}${inp('Jumlah alumni terlibat','ja',i.alumni||0,'number')}${inp('Lokasi kegiatan','lk',i.lokasi)}</div>${s.mitra?inp('Mitra (surat persetujuan mitra dilampirkan)','mitra',d.mitra):''}</fieldset>
+ <fieldset><legend>Isi usulan</legend>${inp('Manfaat sosial ekonomi','manfaat',i.manfaat)}${ta(s.rk[0],'ringkasan',i.ringkasan,6)}
+ ${BAB[s.bab].map(([x,l])=>ta(l,'b_'+x,i.bab?.[x],7)).join('')}</fieldset>
+ <fieldset><legend>Rencana anggaran biaya${s.dana?' (total harus '+rp(s.dana)+')':''}</legend><div class="g2">${RAB.map(([x,l])=>inp(l+' (Rp)','r_'+x,i.rab?.[x]||0,'number','min=0')).join('')}</div></fieldset>
+ <fieldset><legend>Jadwal, luaran, referensi</legend>${ta('Jadwal kegiatan (bar chart: kegiatan × bulan)','jadwal',i.jadwal,4)}${ta('Target luaran','luaran',i.luaran??s.lu.join('\n'),4)}${ta('Referensi','referensi',i.referensi,4,s.ref)}</fieldset>
+ <div class="acts"><button class="btn" onclick="sv(false)">Simpan Draft</button><button class="btn p" onclick="sv(true)">Simpan &amp; Ajukan</button></div></form>`}
+function collect(){const f=new FormData($('#f')),g=k=>f.get(k)||'',A=k=>f.getAll(k),bab={},rab={};
+ BAB[SK[g('skema')].bab].forEach(([x])=>bab[x]=g('b_'+x));RAB.forEach(([x])=>rab[x]=+g('r_'+x)||0);
+ return{skema:g('skema'),judul:g('judul'),tahun:+g('tahun'),semester:g('semester'),jml_mahasiswa:+g('jm')||0,mitra:g('mitra'),anggaran:Object.values(rab).reduce((a,b)=>a+b,0),
+ ag:A('an').map((n,j)=>{const r=k=>A(k)[j],d=r('aj')==='dosen';return{jenis:r('aj'),user_id:d?r('au'):'',nama:n,sinta:r('as'),prodi:r('ap'),tugas:r('at')}}).filter(x=>x.user_id||x.nama),
+ isi:{ketua:{nama:g('kn'),pend:g('kp'),jab:g('kj'),sinta:g('ks'),hp:g('kh'),email:g('ke'),tugas:g('kt'),prodi:g('prodi')},alumni:g('ja'),lokasi:g('lk'),manfaat:g('manfaat'),ringkasan:g('ringkasan'),bab,rab,jadwal:g('jadwal'),luaran:g('luaran'),referensi:g('referensi')}}}
+const rs=()=>{window._d=collect();$('#v').innerHTML=formV(window._id)};
+const fmsg=(t,ok)=>note('fm',t,ok);
+async function sv(submit){const c=collect();if(!c.judul)return fmsg('Judul wajib diisi.');
+ const old=window._id&&C.proposal.find(x=>x.id===window._id),now=new Date().toISOString(),id=window._id||uid();
+ const prev=C.anggota.filter(x=>x.proposal_id===id),dos=c.ag.filter(a=>a.jenis==='dosen');
+ if(dos.some(a=>!a.user_id))return fmsg('Pilih dosen terdaftar pada setiap anggota bertipe dosen.');if(new Set(dos.map(a=>a.user_id)).size<dos.length)return fmsg('Dosen yang sama dipilih lebih dari sekali.');
+ c.ag=c.ag.map(a=>mem(a,prev));
+ const r={id,skema:c.skema,judul:c.judul,tahun:c.tahun,semester:c.semester,ketua_id:old?old.ketua_id:U.id,status:old?old.status:'draft',mitra:c.mitra,jml_mahasiswa:c.jml_mahasiswa,anggaran:c.anggaran,isi:JSON.stringify({...(old?JSON.parse(old.isi):{}),...c.isi}),created_at:old?old.created_at:now,updated_at:now};
+ if(submit){const cl=check({...r,isi:c.isi,ag:c.ag}),bad=cl.filter(x=>!x[0]);if(bad.length)return fmsg('Belum bisa diajukan: '+bad.map(x=>x[1]).join('; '));
+  if(kuota(r))return fmsg('Anda sudah punya satu proposal '+SK[r.skema].j+' sebagai ketua pada semester ini (maks. 1).');r.status='diajukan'}
+ await save('proposal',r);const keep=new Set(c.ag.map(a=>a.id));for(const a of prev)if(!keep.has(a.id))await rm('anggota',a.id);for(const a of c.ag)await save('anggota',{proposal_id:id,...a});go('list');detail(id)}
+
+/* ---- Detail, review, workflow, pendanaan ---- */
+const closeDr=()=>{$('#dr').classList.remove('on');$('#scrim').classList.remove('on')};
+function detail(id){const p=full(id),s=SK[p.skema],i=p.isi,k=i.ketua||{},rv=C.review.filter(x=>x.proposal_id===id),tm=C.termin.filter(x=>x.proposal_id===id).sort((a,b)=>a.termin-b.termin),st=p.status,ac=[];
+ const b=(l,f,c='p')=>ac.push(`<button class="btn ${c}" onclick="${f}">${l}</button>`);
+ if(owner(p)&&['draft','dikembalikan'].includes(st)){b('Ubah',`go('form','${id}')`,'');b('Hapus',`hapus('${id}')`,'d')}
+ if(owner(p)&&st=='pelaksanaan')b('Serahkan laporan akhir',`adv('${id}','laporan')`);
+ if(owner(p)&&st=='diseminasi')b('Lapor bukti publikasi',`publ('${id}')`);
+ const me=p.ag.find(a=>a.user_id===U.id);if(me&&canRespond(p))b('Tanggapi undangan anggota',`respon('${me.id}')`);
+ if(isA()){if(st=='diajukan')b('Mulai review',`adv('${id}','review')`);
+  if(st=='review'){b('Tetapkan layak → kontrak',`layak('${id}')`);b('Kembalikan untuk revisi',`adv('${id}','dikembalikan')`,'d')}
+  const t=tm.find(x=>x.status=='menunggu');if(t&&['kontrak','laporan','luaran'].includes(st))b('Cairkan termin '+t.termin,`cair('${t.id}')`)}
+ if(['kontrak','pelaksanaan','laporan','diseminasi','luaran','selesai'].includes(st))b('Cetak sampul & pengesahan',`cetak('${id}')`,'');
+ const canRv=['reviewer','admin'].includes(U.role)&&st=='review';
+ $('#dt').textContent=s.n;$('#db').innerHTML=`<h3 style="margin:0">${esc(p.judul)}</h3><p>${badge(st)} ${p.tahun} ${p.semester} · ${rp(p.anggaran)}</p>
+ <h4>Kelengkapan menurut pedoman</h4><ul class="ck">${check(p).map(([o,t])=>`<li class="${o?'ok':'no'}">${esc(t)}</li>`).join('')}</ul>
+ <h4>Tim</h4><p>Ketua: ${esc(k.nama)} (${k.pend}, ${k.jab||'–'}, SINTA ${esc(k.sinta)})</p>${p.ag.map(a=>`<p>Anggota: ${esc(a.nama)} · ${esc(a.sinta)} · ${esc(a.tugas)}<br><small>${a.user_id?'Dosen terdaftar · '+chip(AST,a.status||'menunggu')+(a.alasan?' '+esc(a.alasan):''):'Non-dosen'}</small></p>`).join('')}<p>Mahasiswa: ${p.jml_mahasiswa}${p.mitra?' · Mitra: '+esc(p.mitra):''}</p>
+ <h4>${s.rk[0]}</h4><p>${esc(i.ringkasan)}</p>${BAB[s.bab].map(([x,l])=>`<h4>${l}</h4><p>${esc(i.bab?.[x])}</p>`).join('')}
+ <h4>Anggaran</h4>${RAB.map(([x,l])=>`<p>${l}: ${rp(i.rab?.[x])}</p>`).join('')}
+ ${i.publikasi?`<h4>Bukti publikasi</h4><p>${esc(i.publikasi)}</p>`:''}
+ ${tm.length?`<h4>Termin</h4>${tm.map(t=>`<p>T${t.termin} — ${rp(t.jumlah)} (${t.persen.toFixed(0)}%) · ${t.status}<br><small>${TSYARAT[t.termin-1]}</small></p>`).join('')}`:''}
+ <h4>Review</h4>${rv.length?rv.map(x=>`<p><b>${x.skor}</b> · ${esc(x.rekomendasi)} — ${esc(x.catatan)}</p>`).join(''):'<p>Belum ada review.</p>'}
+ ${canRv?`<h4>Beri penilaian</h4><form onsubmit="event.preventDefault();review('${id}',this)"><p class="msg" id="rvm" hidden></p>${inp('Skor (0–100)','skor','','number','min=0 max=100 required')}<div class="fg"><label>Rekomendasi</label>${fs('rek',['Layak','Layak dengan revisi','Tidak layak'])}</div>${ta('Catatan','cat','',3)}<button class="btn p">Simpan review</button></form>`:''}
+ <div class="acts">${ac.join('')}</div>`;
+ $('#dr').classList.add('on');$('#scrim').classList.add('on')}
+const rf=id=>{go(cur);detail(id)};
+async function adv(id,to){const r=C.proposal.find(x=>x.id===id);r.status=to;r.updated_at=new Date().toISOString();await save('proposal',r);rf(id)}
+async function review(id,f){const d=Object.fromEntries(new FormData(f)),sk=+d.skor;if(d.skor===''||isNaN(sk)||sk<0||sk>100)return note('rvm','Isi skor 0–100.');
+ await save('review',{id:uid(),proposal_id:id,reviewer_id:U.id,skor:sk,rekomendasi:d.rek,catatan:d.cat,created_at:new Date().toISOString()});rf(id)}
+async function layak(id){if(!C.review.some(x=>x.proposal_id===id))return warn('Belum ada review untuk proposal ini.');
+ const p=full(id),s=SK[p.skema],T=s.dana?[1.5e6,2e6,2.5e6]:[.25,.35,.4].map(x=>p.anggaran*x);
+ for(const x of C.termin.filter(t=>t.proposal_id===id))await rm('termin',x.id);
+ for(let n=0;n<3;n++)await save('termin',{id:uid(),proposal_id:id,termin:n+1,persen:T[n]/p.anggaran*100,jumlah:T[n],status:'menunggu',tanggal:''});await adv(id,'kontrak')}
+async function cair(tid){const t=C.termin.find(x=>x.id===tid),p=C.proposal.find(x=>x.id===t.proposal_id),need=['kontrak','laporan','luaran'][t.termin-1],to=['pelaksanaan','diseminasi','selesai'][t.termin-1];
+ if(p.status!==need)return warn('Syarat termin '+t.termin+' belum terpenuhi: '+TSYARAT[t.termin-1]+'.');
+ t.status='dicairkan';t.tanggal=new Date().toISOString().slice(0,10);await save('termin',t);await adv(p.id,to);if(cur=='fund')go('fund')}
+async function publ(id){const d=await modal({t:'Lapor bukti publikasi',html:inp('Judul / tautan artikel (bukti publikasi sesuai ketentuan skema)','bukti','','text','required'),ok:'Kirim',chk:x=>x.bukti.trim()?'':'Isi bukti publikasi.'});if(!d)return;const v=d.bukti.trim();
+ const r=C.proposal.find(x=>x.id===id),i=JSON.parse(r.isi);i.publikasi=v;r.isi=JSON.stringify(i);await save('proposal',r);await adv(id,'luaran')}
+async function hapus(id){if(!await sure('Hapus proposal ini beserta anggota, review, dan termin?'))return;for(const t of ['anggota','review','termin'])for(const x of C[t].filter(y=>y.proposal_id===id))await rm(t,x.id);await rm('proposal',id);go('list')}
+function fund(){const t=C.termin.slice().sort((a,b)=>a.proposal_id.localeCompare(b.proposal_id)||a.termin-b.termin);
+ return `<div class="tw"><table><thead><tr><th>Proposal</th><th>Termin</th><th>Jumlah</th><th>Syarat</th><th>Status</th></tr></thead><tbody>${t.length?t.map(x=>{const p=C.proposal.find(y=>y.id===x.proposal_id);return `<tr><td>${esc(p?.judul)}</td><td>T${x.termin} (${x.persen.toFixed(0)}%)</td><td>${rp(x.jumlah)}</td><td>${TSYARAT[x.termin-1]}</td><td>${x.status=='menunggu'?`<button class="btn" onclick="cair('${x.id}')">Cairkan</button>`:'Dicairkan '+x.tanggal}</td></tr>`}).join(''):'<tr><td colspan=5>Termin dibuat otomatis saat proposal ditetapkan layak.</td></tr>'}</tbody></table></div>`}
+
+/* ---- Cetak sampul + halaman pengesahan (Lampiran 1 & 2) ---- */
+function cetak(id){const p=full(id),s=SK[p.skema],i=p.isi,k=i.ketua,r=(a,b)=>`<tr><td width="35%">${a}</td><td>${b}</td></tr>`;
+ $('#pa').innerHTML=`<div style="text-align:center;padding:80px 0;page-break-after:always;font-family:'Times New Roman',serif"><h2>PROPOSAL<br>${s.n.toUpperCase()}<br>UNIVERSITAS IPWIJA</h2><h3 style="margin:60px 0">${esc(p.judul)}</h3><p>PROGRAM STUDI ${esc(k.prodi)}<br>UNIVERSITAS IPWIJA<br>${p.tahun}</p><small>Sampul softcover warna ${s.sampul}, tulisan hitam</small></div>
+ <div style="font-family:'Times New Roman',serif"><h3 style="text-align:center">HALAMAN PENGESAHAN<br>${s.n.toUpperCase()}<br>UNIVERSITAS IPWIJA</h3><table style="width:100%;border-collapse:collapse">${r('Judul',esc(p.judul))}${r('Manfaat sosial ekonomi',esc(i.manfaat))}
+ ${r('Ketua',`${esc(k.nama)}<br>Jabatan fungsional: ${k.jab||'–'}<br>Program studi: ${esc(k.prodi)}<br>SINTA ID: ${esc(k.sinta)}<br>HP: ${esc(k.hp)} · ${esc(k.email)}`)}${p.ag.map((a,n)=>r('Anggota '+(n+1),`${esc(a.nama)}<br>SINTA ID: ${esc(a.sinta)} · ${esc(a.prodi)}`)).join('')}
+ ${r('Jumlah mahasiswa / alumni terlibat',p.jml_mahasiswa+' / '+(i.alumni||0))}${r('Lokasi kegiatan',esc(i.lokasi))}${r('Lama kegiatan',s.dur)}${r('Biaya',rp(p.anggaran))}${r('Sumber dana','Universitas IPWIJA')}</table>
+ <p style="margin-top:30px">Jakarta, ${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</p><table style="width:100%;border:0"><tr><td style="border:0">Menyetujui,<br>Kepala LPPM Universitas IPWIJA<br><br><br><br>Dr. Ir. Titing Widyastuti, MM.<br>NIDN</td><td style="border:0">Ketua,<br><br><br><br><br>${esc(k.nama)}<br>NIDN</td></tr></table></div>`;window.print()}
+
+/* ---- Basis data: ekspor untuk migrasi ke D1 ---- */
+const dl=(n,t)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=n;a.click()};
+const sq=v=>v==null?'NULL':typeof v=='number'?v:"'"+String(v).replace(/'/g,"''")+"'";
+function dump(){let o='';for(const t of TABLES)for(const r of C[t]){const k=Object.keys(r);o+=`INSERT OR REPLACE INTO ${t}(${k.join(',')}) VALUES(${k.map(x=>sq(r[x])).join(',')});\n`}return o}
+function dbv(){return `<p>Penyimpanan aktif: <b>IndexedDB</b> (lokal di browser). Seluruh akses data lewat adapter <code>DB</code> (<code>open/all/put/del</code>); skema SQL di bawah kompatibel SQLite sehingga langsung dapat dipakai di Cloudflare D1.</p>
+ <div class="acts"><button class="btn p" onclick="dl('schema.sql',SCHEMA_SQL)">Unduh schema.sql</button><button class="btn" onclick="dl('seed.sql',dump())">Unduh seed.sql (INSERT data)</button><button class="btn" onclick="dl('ppm-backup.json',JSON.stringify(C,null,1))">Ekspor JSON</button><button class="btn d" onclick="reset()">Reset data lokal</button></div>
+ <h4>Jumlah baris</h4>${TABLES.map(t=>`<p>${t}: ${C[t].length}</p>`).join('')}<h4>schema.sql</h4><pre style="white-space:pre-wrap;font-size:12px">${esc(SCHEMA_SQL)}</pre>`}
+async function reset(){if(!await sure('Hapus SEMUA data lokal? Tindakan ini tidak dapat dibatalkan.'))return;await IDB.reset();location.reload()}
+
+/* ===== 4b. Master data (opsi), kelola pengguna, profil ===== */
+const ROLE={admin:['Admin LPPM','#2a5a8c'],dosen:['Dosen','#2a7f62'],reviewer:['Reviewer','#b7791f']};
+const PRODI0=['Teknik Informatika','Teknik Sipil','Teknik Industri','Teknik Elektro','Manajemen'];
+const KAT={prodi:['Program Studi','Dipakai pada profil pengguna, program studi ketua, dan anggota proposal.'],semester:['Semester','Pilihan semester pada form proposal.'],tahun:['Tahun Usulan','Pilihan tahun pada form proposal.']};
+let mk='prodi';
+const ord=k=>C.opsi.filter(o=>o.kategori===k).sort((a,b)=>a.urut-b.urut||a.nilai.localeCompare(b.nilai));
+const opts=(k,cur)=>{const l=ord(k).filter(o=>o.aktif!==0).map(o=>o.nilai),c=cur==null?'':String(cur);if(c&&!l.includes(c))l.push(c);return l};
+const osel=(n,k,v,blank)=>`<select name="${n}">${blank?`<option value="">${blank}</option>`:''}${opts(k,v).map(x=>`<option ${x==v?'selected':''}>${esc(x)}</option>`).join('')}</select>`;
+const fs=(n,o,v)=>`<select name="${n}">${o.map(x=>`<option ${x==v?'selected':''}>${x}</option>`).join('')}</select>`;
+const note=(id,t,ok)=>{const m=$('#'+id);m.textContent=t;m.className='msg'+(ok?' ok':'');m.hidden=false;m.scrollIntoView({block:'center'})};
+const paintSess=()=>{$('#sess').innerHTML=`<span class="wl">Selamat datang </span><b>${esc(U.nama)}</b> (${U.role}) | <a href="#" onclick="go('profil');return false">Profil</a> | <a href="#" onclick="logout();return false">Log Out</a>`};
+const iso=p=>JSON.parse(p.isi||'{}');
+const setI=async(p,f)=>{const i=iso(p);f(i);p.isi=JSON.stringify(i);await save('proposal',p)};
+/* REF: n(nilai)=jumlah data yang memakai opsi; r(lama,baru)=ganti nama di semua data terkait */
+const REF={
+ prodi:{n:v=>C.users.filter(u=>u.prodi===v).length+C.anggota.filter(a=>a.prodi===v).length+C.proposal.filter(p=>iso(p).ketua?.prodi===v).length,
+  async r(a,b){for(const u of C.users.filter(u=>u.prodi===a))await save('users',{...u,prodi:b});for(const x of C.anggota.filter(x=>x.prodi===a))await save('anggota',{...x,prodi:b});
+   for(const p of C.proposal.filter(p=>iso(p).ketua?.prodi===a))await setI(p,i=>i.ketua.prodi=b)}},
+ semester:{n:v=>C.proposal.filter(p=>p.semester===v).length,async r(a,b){for(const p of C.proposal.filter(p=>p.semester===a)){p.semester=b;await save('proposal',p)}}},
+ tahun:{n:v=>C.proposal.filter(p=>String(p.tahun)===v).length,async r(a,b){for(const p of C.proposal.filter(p=>String(p.tahun)===a)){p.tahun=+b;await save('proposal',p)}}}};
+async function seedOpsi(){if(C.opsi.length)return;
+ const uq=a=>[...new Set(a.map(x=>String(x??'').trim()).filter(Boolean))];
+ const D={prodi:uq([...PRODI0,...C.users.map(u=>u.prodi),...C.anggota.map(a=>a.prodi),...C.proposal.map(p=>iso(p).ketua?.prodi)]),semester:['Ganjil','Genap'],
+  tahun:uq(['2025','2026','2027','2028',...C.proposal.map(p=>p.tahun)]).sort()};
+ for(const [k,l] of Object.entries(D))for(const [i,v] of l.entries())await save('opsi',{id:uid(),kategori:k,nilai:v,urut:i,aktif:1})}
+
+/* ---- Master data & opsi (admin) ---- */
+function master(){const l=ord(mk);
+ return `<div class="bar"><select onchange="mk=this.value;go('master')">${Object.entries(KAT).map(([k,v])=>`<option value="${k}" ${k==mk?'selected':''}>${v[0]}</option>`).join('')}</select><span>${esc(KAT[mk][1])}</span></div>
+ <p class="msg" id="om" hidden></p><form class="bar" onsubmit="event.preventDefault();addOpsi()"><input id="nv" placeholder="Nilai baru…" required><button class="btn p">+ Tambah</button><span>Jumlah: ${l.length}</span></form>
+ <div class="tw"><table><thead><tr><th>#</th><th>Nilai</th><th>Dipakai</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${l.length?l.map((o,i)=>`<tr class="${o.aktif===0?'off':''}"><td>${i+1}</td><td>${esc(o.nilai)}</td><td>${REF[mk].n(o.nilai)}</td><td>${o.aktif===0?'Nonaktif':'Aktif'}</td>
+ <td class="act"><button class="btn sm" ${i?'':'disabled'} onclick="geser('${o.id}',-1)">↑</button> <button class="btn sm" ${i<l.length-1?'':'disabled'} onclick="geser('${o.id}',1)">↓</button> <button class="btn sm" onclick="ubahOpsi('${o.id}')">Ubah</button> <button class="btn sm" onclick="togOpsi('${o.id}')">${o.aktif===0?'Aktifkan':'Nonaktifkan'}</button> <button class="btn sm d" onclick="hapusOpsi('${o.id}')">Hapus</button></td></tr>`).join(''):'<tr><td colspan=5>Belum ada opsi.</td></tr>'}</tbody></table></div>
+ <p><small>Opsi nonaktif tidak muncul di form, tetapi data lama yang memakainya tetap utuh. Opsi yang masih dipakai tidak dapat dihapus. Mengubah nama otomatis memperbarui semua data terkait.</small></p>`}
+const badOpsi=(v,id)=>mk==='tahun'&&!/^\d{4}$/.test(v)?'Tahun harus 4 digit angka.':ord(mk).some(o=>o.id!==id&&o.nilai.toLowerCase()===v.toLowerCase())?'Nilai sudah ada.':'';
+async function addOpsi(){const v=$('#nv').value.trim();if(!v)return;const e=badOpsi(v);if(e)return note('om',e);
+ const l=ord(mk);await save('opsi',{id:uid(),kategori:mk,nilai:v,urut:l.length?Math.max(...l.map(o=>o.urut))+1:0,aktif:1});go('master')}
+async function ubahOpsi(id){const o=C.opsi.find(x=>x.id===id),d=await modal({t:'Ubah nilai',html:inp('Nilai','v',o.nilai,'text','required'),chk:x=>badOpsi(x.v.trim(),id)});if(!d)return;const v=d.v.trim();if(v===o.nilai)return;
+ const n=REF[mk].n(o.nilai);if(n&&!await sure(`Nilai ini dipakai pada ${n} data. Semua akan diperbarui ke "${v}". Lanjutkan?`))return;
+ await REF[mk].r(o.nilai,v);o.nilai=v;await save('opsi',o);U=C.users.find(x=>x.id===U.id);paintSess();go('master')}
+async function togOpsi(id){const o=C.opsi.find(x=>x.id===id);o.aktif=o.aktif===0?1:0;await save('opsi',o);go('master')}
+async function hapusOpsi(id){const o=C.opsi.find(x=>x.id===id),n=REF[mk].n(o.nilai);
+ if(n)return warn(`Opsi ini masih dipakai pada ${n} data. Nonaktifkan saja agar tidak muncul di form.`);if(!await sure('Hapus opsi "'+o.nilai+'"?'))return;await rm('opsi',id);go('master')}
+async function geser(id,d){const l=ord(mk),i=l.findIndex(o=>o.id===id),j=i+d;if(j<0||j>=l.length)return;[l[i],l[j]]=[l[j],l[i]];
+ for(let n=0;n<l.length;n++)if(l[n].urut!==n){l[n].urut=n;await save('opsi',l[n])}go('master')}
+
+/* ---- Profil & kelola pengguna ---- */
+const pfields=(u,c='g3')=>`<div class="${c}">${inp('Nama lengkap','nama',u.nama)}${inp('Email','email',u.email,'email')}${inp('No. HP','hp',u.hp)}${inp('NIDN','nidn',u.nidn)}${inp('SINTA ID','sinta',u.sinta)}<div class="fg"><label>Pendidikan terakhir</label>${fs('pend',['','S1','S2','S3'],u.pend)}</div><div class="fg"><label>Jabatan fungsional</label>${fs('jab',JAB,u.jab)}</div><div class="fg"><label>Program studi</label>${osel('prodi','prodi',u.prodi,'— pilih —')}</div></div>`;
+const pdata=(f,g=k=>(f.get(k)||'').trim())=>({nama:g('nama'),email:g('email'),hp:g('hp'),nidn:g('nidn'),sinta:g('sinta'),pend:g('pend'),jab:g('jab'),prodi:g('prodi')});
+function profil(){return `<form id="pf" onsubmit="return false"><p class="msg" id="pm" hidden></p>
+ <fieldset><legend>Akun</legend><div class="g3">${inp('Username','un',U.username,'text','readonly')}${inp('Role','ro',ROLE[U.role][0],'text','readonly')}</div></fieldset>
+ <fieldset><legend>Data diri</legend>${pfields(U)}<small>Data ini mengisi otomatis identitas ketua saat membuat proposal baru.</small></fieldset>
+ <div class="acts"><button class="btn p" onclick="svProfil()">Simpan profil</button></div></form>
+ <form id="pw" onsubmit="return false" autocomplete="off" style="margin-top:18px"><p class="msg" id="pwm" hidden></p>
+ <fieldset><legend>Ubah password</legend><div class="g3">${inp('Password lama','po','','password','autocomplete="current-password"')}${inp('Password baru (min. 6 karakter)','pn','','password','autocomplete="new-password"')}${inp('Ulangi password baru','pc','','password','autocomplete="new-password"')}</div></fieldset>
+ <div class="acts"><button class="btn" onclick="svPw()">Ubah password</button></div></form>`}
+async function svProfil(){const d=pdata(new FormData($('#pf')));if(!d.nama)return note('pm','Nama wajib diisi.');
+ const r={...U,...d};await save('users',r);await syncAng(r);U=r;paintSess();note('pm','Profil tersimpan.',1)}
+async function svPw(){const f=new FormData($('#pw')),o=f.get('po'),n=f.get('pn'),c=f.get('pc');
+ if(o!==U.password)return note('pwm','Password lama salah.');if(!n||n.length<6)return note('pwm','Password baru minimal 6 karakter.');if(n!==c)return note('pwm','Konfirmasi password tidak sama.');
+ const r={...U,password:n};await save('users',r);U=r;$('#pw').reset();note('pwm','Password diperbarui.',1)}
+
+const admins=ex=>C.users.filter(u=>u.role==='admin'&&u.aktif!==0&&u.id!==ex).length;
+function users(){const f=(q.u||'').toLowerCase(),r=q.ur||'',v=C.users.filter(u=>(!r||u.role===r)&&(!f||(u.username+' '+u.nama+' '+(u.email||'')).toLowerCase().includes(f)));
+ return `<form class="bar" onsubmit="return false"><input placeholder="Cari username / nama / email…" value="${esc(q.u||'')}" oninput="q.u=this.value;ru()"><select onchange="q.ur=this.value;ru()"><option value="">Semua role</option>${Object.entries(ROLE).map(([k,s])=>`<option value="${k}" ${r==k?'selected':''}>${s[0]}</option>`).join('')}</select><button class="btn p" onclick="uform()">+ Tambah pengguna</button><span>Jumlah: ${v.length}</span></form>
+ <div class="tw"><table><thead><tr><th>Username</th><th>Nama</th><th>Role</th><th>Program studi</th><th>Email</th><th>Status</th></tr></thead><tbody>${v.length?v.map(u=>`<tr data-id="${u.id}" class="${u.aktif===0?'off':''}" onclick="uform('${u.id}')"><td>${esc(u.username)}</td><td>${esc(u.nama)}</td><td>${chip(ROLE,u.role)}</td><td>${esc(u.prodi)}</td><td>${esc(u.email)}</td><td>${u.aktif===0?'Nonaktif':'Aktif'}</td></tr>`).join(''):'<tr><td colspan=6>Tidak ada pengguna.</td></tr>'}</tbody></table></div>`}
+function uform(id){const u=id?C.users.find(x=>x.id===id):{role:'dosen',aktif:1};$('#dt').textContent=id?'Ubah Pengguna':'Tambah Pengguna';
+ $('#db').innerHTML=`<form id="uf" onsubmit="return false" autocomplete="off"><p class="msg" id="um" hidden></p>
+ <div class="g2">${inp('Username','username',u.username,'text',id?'readonly':'autocomplete="off"')}<div class="fg"><label>Role</label><select name="role">${Object.entries(ROLE).map(([k,s])=>`<option value="${k}" ${k==u.role?'selected':''}>${s[0]}</option>`).join('')}</select></div></div>
+ ${inp(id?'Password baru (kosongkan jika tidak diubah)':'Password awal (min. 6 karakter)','password','','password','autocomplete="new-password"')}
+ ${pfields(u,'g2')}
+ <div class="fg"><label><input type="checkbox" name="aktif" ${u.aktif===0?'':'checked'} style="width:auto"> Akun aktif (boleh login)</label></div>
+ <div class="acts"><button class="btn p" onclick="svUser(${id?`'${id}'`:'null'})">Simpan</button>${id?`<button class="btn d" onclick="hapusUser('${id}')">Hapus</button>`:''}</div></form>`;
+ $('#dr').classList.add('on');$('#scrim').classList.add('on')}
+async function svUser(id){const f=new FormData($('#uf')),old=id&&C.users.find(x=>x.id===id),un=(f.get('username')||'').trim().toLowerCase(),pw=f.get('password')||'',role=f.get('role'),aktif=f.get('aktif')?1:0,d=pdata(f);
+ if(!/^[a-z0-9._-]{3,30}$/.test(un))return note('um','Username 3–30 karakter: huruf kecil, angka, titik, garis bawah, atau strip.');
+ if(C.users.some(x=>x.username===un&&x.id!==id))return note('um','Username sudah dipakai.');
+ if(!d.nama)return note('um','Nama wajib diisi.');
+ if(!id&&pw.length<6)return note('um','Password awal minimal 6 karakter.');if(id&&pw&&pw.length<6)return note('um','Password baru minimal 6 karakter.');
+ if(old){if(id===U.id&&(role!==U.role||!aktif))return note('um','Anda tidak dapat mengubah role atau menonaktifkan akun Anda sendiri.');
+  if(old.role==='admin'&&(role!=='admin'||!aktif)&&!admins(id))return note('um','Harus ada minimal satu admin aktif.')}
+ const r={...(old||{id:uid()}),username:un,role,aktif,...d,password:pw||old?.password};await save('users',r);await syncAng(r);
+ if(r.id===U.id){U=r;paintSess()}closeDr();go('users')}
+async function hapusUser(id){const u=C.users.find(x=>x.id===id);if(id===U.id)return warn('Anda tidak dapat menghapus akun sendiri.');
+ if(u.role==='admin'&&!admins(id))return warn('Harus ada minimal satu admin aktif.');
+ const np=C.proposal.filter(p=>p.ketua_id===id).length,nr=C.review.filter(r=>r.reviewer_id===id).length,na=C.anggota.filter(a=>a.user_id===id).length;
+ if(np||nr||na)return warn(`Pengguna ini terkait dengan ${np} proposal (ketua), ${na} keanggotaan tim, dan ${nr} review. Nonaktifkan akun saja agar data tetap utuh.`);
+ if(!await sure('Hapus pengguna "'+u.username+'"?'))return;await rm('users',id);closeDr();go('users')}
+
+/* ===== 5. Login & init ===== */
+function start(u){U=u;localStorage.setItem('ppm_u',u.username);$('#auth').hidden=true;paintSess();go('home')}
+function logout(){localStorage.removeItem('ppm_u');U=null;$('#auth').hidden=false}
+$('#lf').onsubmit=e=>{e.preventDefault();const u=C.users.find(x=>x.username==$('#lu').value.trim().toLowerCase()&&x.password==$('#lp').value);
+ if(!u){return note('le','Username atau password salah.')}if(u.aktif===0)return note('le','Akun dinonaktifkan. Hubungi admin LPPM.');$('#le').hidden=true;start(u)};
+(async()=>{await DB.open();await load();await seed();const u=C.users.find(x=>x.username==localStorage.getItem('ppm_u')&&x.aktif!==0);if(u)start(u)})();
+</script></body></html>
