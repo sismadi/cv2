@@ -57,6 +57,10 @@ fieldset{border:1px solid var(--line);border-radius:6px;margin:0 0 14px;padding:
 <div id="pa"></div>
 <div class="md" id="md" hidden></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="/js/pdf-laporan.js"></script>
+<script src="/js/monev.js"></script>
+<script src="/js/demo-data.js"></script>
 <script>
 /* ===== 1. SKEMA (config dari Pedoman PPM UNIP 2023). Ubah di sini jika pedoman berubah ===== */
 const lvl=p=>({S1:1,S2:2,S3:3})[p]||0, JAB=['','Asisten Ahli','Lektor','Lektor Kepala','Guru Besar'];
@@ -97,7 +101,7 @@ const ST={draft:['Draft','#6b7a88'],diajukan:['Diajukan','#3b74ab'],review:['Dir
 const TSYARAT=['Proposal lolos & revisi diserahkan','Laporan akhir diserahkan & diseminasi','Bukti publikasi luaran'];
 
 /* ===== 2. DATABASE: adapter tunggal. Skema SQL kompatibel SQLite = Cloudflare D1 ===== */
-const TABLES=['users','proposal','anggota','review','termin','opsi'];
+const TABLES=['users','proposal','anggota','review','termin','opsi','monev'];
 const SCHEMA_SQL=`-- Kompatibel SQLite / Cloudflare D1. Jalankan: wrangler d1 execute <DB> --file=schema.sql
 CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,username TEXT UNIQUE NOT NULL,password TEXT NOT NULL /* DEMO plaintext: ganti hash di D1 */,nama TEXT,role TEXT CHECK(role IN('dosen','reviewer','admin')),email TEXT,hp TEXT,nidn TEXT,sinta TEXT,pend TEXT,jab TEXT,prodi TEXT,aktif INTEGER DEFAULT 1);
 CREATE TABLE IF NOT EXISTS proposal(id TEXT PRIMARY KEY,skema TEXT NOT NULL,judul TEXT NOT NULL,tahun INTEGER,semester TEXT,ketua_id TEXT REFERENCES users(id),status TEXT DEFAULT 'draft',mitra TEXT,jml_mahasiswa INTEGER,anggaran REAL,isi TEXT /* JSON: ketua, ringkasan, bab, rab, jadwal, referensi */,created_at TEXT,updated_at TEXT);
@@ -105,7 +109,11 @@ CREATE TABLE IF NOT EXISTS anggota(id TEXT PRIMARY KEY,proposal_id TEXT REFERENC
 CREATE TABLE IF NOT EXISTS review(id TEXT PRIMARY KEY,proposal_id TEXT REFERENCES proposal(id) ON DELETE CASCADE,reviewer_id TEXT,skor REAL,rekomendasi TEXT,catatan TEXT,created_at TEXT);
 CREATE TABLE IF NOT EXISTS termin(id TEXT PRIMARY KEY,proposal_id TEXT REFERENCES proposal(id) ON DELETE CASCADE,termin INTEGER,persen REAL,jumlah REAL,status TEXT DEFAULT 'menunggu',tanggal TEXT);
 CREATE TABLE IF NOT EXISTS opsi(id TEXT PRIMARY KEY,kategori TEXT NOT NULL,nilai TEXT NOT NULL,urut INTEGER DEFAULT 0,aktif INTEGER DEFAULT 1,UNIQUE(kategori,nilai));
-CREATE INDEX IF NOT EXISTS ix_prop_ketua ON proposal(ketua_id);CREATE INDEX IF NOT EXISTS ix_ang_prop ON anggota(proposal_id);CREATE INDEX IF NOT EXISTS ix_ang_user ON anggota(user_id);`;
+CREATE INDEX IF NOT EXISTS ix_prop_ketua ON proposal(ketua_id);CREATE INDEX IF NOT EXISTS ix_ang_prop ON anggota(proposal_id);CREATE INDEX IF NOT EXISTS ix_ang_user ON anggota(user_id);
+CREATE TABLE IF NOT EXISTS monev(id TEXT PRIMARY KEY,proposal_id TEXT REFERENCES proposal(id) ON DELETE CASCADE,termin_id TEXT REFERENCES termin(id) ON DELETE CASCADE,termin INTEGER,uraian TEXT /* laporan termin (ketua) */,realisasi REAL,kendala TEXT,tgl_lapor TEXT,penilai_id TEXT,detail TEXT /* JSON skor per kriteria */,nilai REAL,rekomendasi TEXT,catatan TEXT,tgl_monev TEXT);
+CREATE INDEX IF NOT EXISTS ix_monev_prop ON monev(proposal_id);
+CREATE INDEX IF NOT EXISTS ix_monev_termin ON monev(termin_id);
+`;
 /* Antarmuka adapter: open() all(t) put(t,row) del(t,id). Ganti `const DB=IDB` -> `D1` saat siap. */
 const IDB={db:null,
  open(){return new Promise((ok,no)=>{const r=indexedDB.open('ppm_lppm',2);r.onupgradeneeded=()=>TABLES.forEach(t=>{if(!r.result.objectStoreNames.contains(t))r.result.createObjectStore(t,{keyPath:'id'})});r.onsuccess=()=>{this.db=r.result;ok()};r.onerror=()=>no(r.error)})},
@@ -119,7 +127,7 @@ const D1={base:'/api',async open(){},
 const DB=D1;
 let C={},U=null;
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
-const load=async()=>{for(const t of TABLES)C[t]=await DB.all(t)};
+const load=async()=>{for(const t of TABLES){const r=await DB.all(t);C[t]=Array.isArray(r)?r:[]}};
 const save=async(t,r)=>{await DB.put(t,r);const a=C[t],i=a.findIndex(x=>x.id===r.id);i<0?a.push(r):a[i]=r};
 const rm=async(t,id)=>{await DB.del(t,id);C[t]=C[t].filter(x=>x.id!==id)};
 async function seed(){if(!C.users.length)for(const [u,p,n,r] of [['wawan','wawan123','Wawan Sismadi','admin'],['dosen','dosen123','Dosen Contoh','dosen'],['reviewer','reviewer123','Reviewer LPPM','reviewer']])await save('users',{id:uid(),username:u,password:p,nama:n,role:r,aktif:1});await seedOpsi()}
@@ -158,13 +166,13 @@ const inv=()=>C.anggota.filter(a=>a.user_id===U.id).map(a=>({a,p:C.proposal.find
 const kuota=p=>C.proposal.some(x=>x.id!==p.id&&x.ketua_id===p.ketua_id&&x.tahun==p.tahun&&x.semester==p.semester&&SK[x.skema].j===SK[p.skema].j&&!['draft','dikembalikan'].includes(x.status));
 
 /* ===== 4. Navigasi & tampilan ===== */
-const MENU={dosen:[['home','Beranda'],['list','Proposal Saya'],['appr','Persetujuan Anggota'],['form','Buat Proposal'],['guide','Panduan Skema'],['profil','Profil Saya']],
- reviewer:[['home','Beranda'],['list','Proposal Masuk'],['guide','Panduan Skema'],['profil','Profil Saya']],
- admin:[['home','Beranda'],['list','Semua Proposal'],['form','Buat Proposal'],['fund','Pendanaan'],['guide','Panduan Skema'],['users','Kelola Pengguna'],['master','Master Data'],['profil','Profil Saya'],['dbv','Basis Data']]};
+const MENU={dosen:[['home','Beranda'],['list','Proposal Saya'],['appr','Persetujuan Anggota'],['form','Buat Proposal'],['monev','Laporan Termin'],['guide','Panduan Skema'],['profil','Profil Saya']],
+ reviewer:[['home','Beranda'],['list','Proposal Masuk'],['monev','Monev Termin'],['guide','Panduan Skema'],['profil','Profil Saya']],
+ admin:[['home','Beranda'],['list','Semua Proposal'],['form','Buat Proposal'],['fund','Pendanaan'],['monev','Monev Termin'],['guide','Panduan Skema'],['users','Kelola Pengguna'],['master','Master Data'],['profil','Profil Saya'],['dbv','Basis Data']]};
 let cur='home',q={s:'',k:'',st:''};
 function go(v,id){if(!MENU[U.role].some(m=>m[0]==v))v='home';cur=v;closeDr();$('#side').innerHTML=MENU[U.role].map(([k,l])=>`<a href="#" class="${k==v?'on':''}" onclick="go('${k}');return false">${l}${k=='appr'&&pendN()?` <span class="badge" style="background:#b7791f">${pendN()}</span>`:''}</a>`).join('');
- const T={home:'Beranda',list:'Daftar Proposal',appr:'Persetujuan Anggota',form:id?'Ubah Proposal':'Buat Proposal',fund:'Pendanaan Termin',guide:'Panduan Skema',dbv:'Basis Data',profil:'Profil Saya',users:'Kelola Pengguna',master:'Master Data & Opsi'};$('#pt').textContent=T[v];
- $('#v').innerHTML=({home,list,appr,form:()=>formV(id),fund,guide,dbv,profil,users,master})[v]()}
+ const T={home:'Beranda',list:'Daftar Proposal',appr:'Persetujuan Anggota',form:id?'Ubah Proposal':'Buat Proposal',fund:'Pendanaan Termin',monev:'Laporan & Monev Termin',guide:'Panduan Skema',dbv:'Basis Data',profil:'Profil Saya',users:'Kelola Pengguna',master:'Master Data & Opsi'};$('#pt').textContent=T[v];
+ $('#v').innerHTML=({home,list,appr,form:()=>formV(id),fund,monev,guide,dbv,profil,users,master})[v]()}
 const vis=()=>C.proposal.filter(p=>U.role==='dosen'?p.ketua_id===U.id||C.anggota.some(a=>a.proposal_id===p.id&&a.user_id===U.id):U.role==='reviewer'?p.status!=='draft':true);
 function home(){const v=vis(),n=s=>v.filter(p=>p.status===s).length;
  return `${U.role==='dosen'&&pendN()?`<p class="msg ok">Anda memiliki ${pendN()} undangan anggota yang menunggu tanggapan. <a href="#" onclick="go('appr');return false">Lihat</a></p>`:''}<div class="stats">${Object.keys(ST).map(s=>`<div class="panel stat"><b>${n(s)}</b>${ST[s][0]}</div>`).join('')}</div>
@@ -237,6 +245,8 @@ function detail(id){const p=full(id),s=SK[p.skema],i=p.isi,k=i.ketua||{},rv=C.re
   if(st=='review'){b('Tetapkan layak → kontrak',`layak('${id}')`);b('Kembalikan untuk revisi',`adv('${id}','dikembalikan')`,'d')}
   const t=tm.find(x=>x.status=='menunggu');if(t&&['kontrak','laporan','luaran'].includes(st))b('Cairkan termin '+t.termin,`cair('${t.id}')`)}
  if(['kontrak','pelaksanaan','laporan','diseminasi','luaran','selesai'].includes(st))b('Cetak sampul & pengesahan',`cetak('${id}')`,'');
+ b('Unduh Proposal (PDF)',`unduhPdf('${id}','proposal')`,'');
+ if(['pelaksanaan','laporan','diseminasi','luaran','selesai'].includes(st))b('Unduh Laporan Akhir (PDF)',`unduhPdf('${id}','laporan')`,'');
  const canRv=['reviewer','admin'].includes(U.role)&&st=='review';
  $('#dt').textContent=s.n;$('#db').innerHTML=`<h3 style="margin:0">${esc(p.judul)}</h3><p>${badge(st)} ${p.tahun} ${p.semester} · ${rp(p.anggaran)}</p>
  <h4>Kelengkapan menurut pedoman</h4><ul class="ck">${check(p).map(([o,t])=>`<li class="${o?'ok':'no'}">${esc(t)}</li>`).join('')}</ul>
@@ -253,10 +263,11 @@ const rf=id=>{go(cur);detail(id)};
 async function adv(id,to){const r=C.proposal.find(x=>x.id===id);r.status=to;r.updated_at=new Date().toISOString();await save('proposal',r);rf(id)}
 async function review(id,f){const d=Object.fromEntries(new FormData(f)),sk=+d.skor;if(d.skor===''||isNaN(sk)||sk<0||sk>100)return note('rvm','Isi skor 0–100.');
  await save('review',{id:uid(),proposal_id:id,reviewer_id:U.id,skor:sk,rekomendasi:d.rek,catatan:d.cat,created_at:new Date().toISOString()});rf(id)}
+const terminPlan=p=>{const s=SK[p.skema],T=s.dana?[1.5e6,2e6,2.5e6]:[.25,.35,.4].map(x=>p.anggaran*x);return T.map((j,n)=>({termin:n+1,jumlah:j,persen:j/p.anggaran*100}))};
 async function layak(id){if(!C.review.some(x=>x.proposal_id===id))return warn('Belum ada review untuk proposal ini.');
- const p=full(id),s=SK[p.skema],T=s.dana?[1.5e6,2e6,2.5e6]:[.25,.35,.4].map(x=>p.anggaran*x);
+ const p=full(id);
  for(const x of C.termin.filter(t=>t.proposal_id===id))await rm('termin',x.id);
- for(let n=0;n<3;n++)await save('termin',{id:uid(),proposal_id:id,termin:n+1,persen:T[n]/p.anggaran*100,jumlah:T[n],status:'menunggu',tanggal:''});await adv(id,'kontrak')}
+ for(const x of terminPlan(p))await save('termin',{id:uid(),proposal_id:id,...x,status:'menunggu',tanggal:''});await adv(id,'kontrak')}
 async function cair(tid){const t=C.termin.find(x=>x.id===tid),p=C.proposal.find(x=>x.id===t.proposal_id),need=['kontrak','laporan','luaran'][t.termin-1],to=['pelaksanaan','diseminasi','selesai'][t.termin-1];
  if(p.status!==need)return warn('Syarat termin '+t.termin+' belum terpenuhi: '+TSYARAT[t.termin-1]+'.');
  t.status='dicairkan';t.tanggal=new Date().toISOString().slice(0,10);await save('termin',t);await adv(p.id,to);if(cur=='fund')go('fund')}
@@ -274,12 +285,18 @@ function cetak(id){const p=full(id),s=SK[p.skema],i=p.isi,k=i.ketua,r=(a,b)=>`<t
  ${r('Jumlah mahasiswa / alumni terlibat',p.jml_mahasiswa+' / '+(i.alumni||0))}${r('Lokasi kegiatan',esc(i.lokasi))}${r('Lama kegiatan',s.dur)}${r('Biaya',rp(p.anggaran))}${r('Sumber dana','Universitas IPWIJA')}</table>
  <p style="margin-top:30px">Jakarta, ${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</p><table style="width:100%;border:0"><tr><td style="border:0">Menyetujui,<br>Kepala LPPM Universitas IPWIJA<br><br><br><br>Dr. Ir. Titing Widyastuti, MM.<br>NIDN</td><td style="border:0">Ketua,<br><br><br><br><br>${esc(k.nama)}<br>NIDN</td></tr></table></div>`;window.print()}
 
+/* ---- Unduh PDF (proposal / laporan akhir) — adapter ke public/js/pdf-laporan.js ---- */
+function unduhPdf(id,jenis){const p=full(id),s=SK[p.skema];
+ try{PDFLaporan.download({jenis,p,s,bab:BAB[s.bab],rab:RAB,termin:C.termin.filter(t=>t.proposal_id===id).sort((a,b)=>a.termin-b.termin),review:C.review.filter(r=>r.proposal_id===id)})}
+ catch(e){console.error(e);warn('Gagal membuat PDF: '+e.message)}}
+
 /* ---- Basis data: ekspor untuk migrasi ke D1 ---- */
 const dl=(n,t)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=n;a.click()};
 const sq=v=>v==null?'NULL':typeof v=='number'?v:"'"+String(v).replace(/'/g,"''")+"'";
 function dump(){let o='';for(const t of TABLES)for(const r of C[t]){const k=Object.keys(r);o+=`INSERT OR REPLACE INTO ${t}(${k.join(',')}) VALUES(${k.map(x=>sq(r[x])).join(',')});\n`}return o}
 function dbv(){return `<p>Penyimpanan aktif: <b>IndexedDB</b> (lokal di browser). Seluruh akses data lewat adapter <code>DB</code> (<code>open/all/put/del</code>); skema SQL di bawah kompatibel SQLite sehingga langsung dapat dipakai di Cloudflare D1.</p>
  <div class="acts"><button class="btn p" onclick="dl('schema.sql',SCHEMA_SQL)">Unduh schema.sql</button><button class="btn" onclick="dl('seed.sql',dump())">Unduh seed.sql (INSERT data)</button><button class="btn" onclick="dl('ppm-backup.json',JSON.stringify(C,null,1))">Ekspor JSON</button><button class="btn d" onclick="reset()">Reset data lokal</button></div>
+ <h4>Data demo (uji alur termin → laporan → monev → PDF)</h4><div class="acts"><button class="btn p" onclick="seedDemo()">Muat data demo</button><button class="btn d" onclick="hapusDemo()">Hapus data demo</button></div>
  <h4>Jumlah baris</h4>${TABLES.map(t=>`<p>${t}: ${C[t].length}</p>`).join('')}<h4>schema.sql</h4><pre style="white-space:pre-wrap;font-size:12px">${esc(SCHEMA_SQL)}</pre>`}
 async function reset(){if(!await sure('Hapus SEMUA data lokal? Tindakan ini tidak dapat dibatalkan.'))return;await IDB.reset();location.reload()}
 

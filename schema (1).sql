@@ -9,3 +9,6 @@ CREATE TABLE IF NOT EXISTS opsi(id TEXT PRIMARY KEY,kategori TEXT NOT NULL,nilai
 CREATE INDEX IF NOT EXISTS ix_prop_ketua ON proposal(ketua_id);
 CREATE INDEX IF NOT EXISTS ix_ang_prop ON anggota(proposal_id);
 CREATE INDEX IF NOT EXISTS ix_ang_user ON anggota(user_id);
+CREATE TABLE IF NOT EXISTS monev(id TEXT PRIMARY KEY,proposal_id TEXT REFERENCES proposal(id) ON DELETE CASCADE,termin_id TEXT REFERENCES termin(id) ON DELETE CASCADE,termin INTEGER,uraian TEXT /* laporan termin (ketua) */,realisasi REAL,kendala TEXT,tgl_lapor TEXT,penilai_id TEXT,detail TEXT /* JSON skor per kriteria */,nilai REAL,rekomendasi TEXT,catatan TEXT,tgl_monev TEXT);
+CREATE INDEX IF NOT EXISTS ix_monev_prop ON monev(proposal_id);
+CREATE INDEX IF NOT EXISTS ix_monev_termin ON monev(termin_id);

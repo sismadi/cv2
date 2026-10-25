@@ -16,6 +16,7 @@ const TABLES = {
   review: ['id', 'proposal_id', 'reviewer_id', 'skor', 'rekomendasi', 'catatan', 'created_at'],
   termin: ['id', 'proposal_id', 'termin', 'persen', 'jumlah', 'status', 'tanggal'],
   opsi: ['id', 'kategori', 'nilai', 'urut', 'aktif'],
+  monev: ['id', 'proposal_id', 'termin_id', 'termin', 'uraian', 'realisasi', 'kendala', 'tgl_lapor', 'penilai_id', 'detail', 'nilai', 'rekomendasi', 'catatan', 'tgl_monev'],
 };
 
 const MAX_BODY = 1_000_000; // 1 MB
