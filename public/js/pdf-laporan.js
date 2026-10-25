@@ -3,7 +3,7 @@
  * Dependensi: jsPDF (window.jspdf). Murni client-side, tanpa akses DOM/DB: data dikirim lewat model.
  *
  * Pemakaian:
- *   PDFLaporan.download({ jenis:'proposal'|'laporan', p, s, bab, rab, termin, review })
+ *   await PDFLaporan.download({ jenis:'proposal'|'laporan', p, s, bab, rab, termin, review })
  *     p      : proposal lengkap { judul, tahun, semester, anggaran, jml_mahasiswa, mitra, isi:{...}, ag:[...] }
  *     s      : konfigurasi skema (SK[p.skema])
  *     bab    : daftar bab [[kunci,label],...]    rab: [[kunci,label],...]
@@ -19,7 +19,16 @@
     univ: 'UNIVERSITAS IPWIJA',
     kota: 'Jakarta',
     kepalaLppm: 'Dr. Ir. Titing Widyastuti, MM.',
+    logo: { src: '/img/logo-ipwija.png', size: 32, y: 20 }, // logo Universitas IPWIJA di sampul (mm)
   };
+
+  /* ---------- logo (dimuat sekali, lalu dipakai ulang oleh semua sampul) ---------- */
+  let logoData = null, logoJob = null;
+  const loadLogo = () => logoJob || (logoJob = fetch(CFG.logo.src)
+    .then((r) => (r.ok ? r.blob() : Promise.reject(new Error('HTTP ' + r.status))))
+    .then((b) => new Promise((ok, no) => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.onerror = no; fr.readAsDataURL(b); }))
+    .then((d) => (logoData = d))
+    .catch((e) => { logoJob = null; console.warn('Logo sampul tidak termuat:', e.message); return null; }));
 
   /* ---------- util ---------- */
   // Font standar PDF hanya mendukung Latin-1 + tanda baca umum; karakter lain diganti agar tidak rusak.
@@ -142,7 +151,11 @@ const predikat = (n) => n >= 85 ? 'Sangat Baik' : n >= 70 ? 'Baik' : n >= 55 ? '
     /** Sampul — Lampiran 1 (proposal) / Lampiran 3 (laporan akhir) */
     cover(w, m) {
       const { p, s, k } = m;
-      w.y = 55;
+      if (logoData) {
+        const { size, y } = CFG.logo;
+        w.d.addImage(logoData, 'PNG', (CFG.page.w - size) / 2, y, size, size);
+      }
+      w.y = 62;
       judulDok(m).forEach((t) => w.para(t, { bold: true, size: 16, align: 'center', lh: 1.4 }));
       w.para(s.n.toUpperCase(), { bold: true, size: 16, align: 'center', lh: 1.4 });
       w.para(CFG.univ, { bold: true, size: 16, align: 'center', lh: 1.4 });
@@ -335,7 +348,9 @@ const predikat = (n) => n >= 85 ? 'Sangat Baik' : n >= 70 ? 'Baik' : n >= 55 ? '
 
   window.PDFLaporan = {
     build,
-    download(model) { const r = build(model); r.doc.save(r.name); return r.name; },
+    /** Async: memastikan logo sampul sudah termuat sebelum dokumen dibuat. */
+    async download(model) { await loadLogo(); const r = build(model); r.doc.save(r.name); return r.name; },
+    preload: loadLogo,
     jenis: Object.keys(TEMPLATES),
   };
 })();

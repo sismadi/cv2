@@ -86,10 +86,10 @@ async function isiMonev(tid) {
 }
 
 /* ---- Adapter ke PDFLaporan (template 'termin') ---- */
-function unduhTermin(tid) {
+async function unduhTermin(tid) {
   const { t, p, m } = terminCtx(tid), pf = full(p.id), s = SK[p.skema];
   try {
-    PDFLaporan.download({
+    await PDFLaporan.download({
       jenis: 'termin', p: pf, s, bab: BAB[s.bab], rab: RAB, t, krit: KRIT, syarat: TSYARAT[t.termin - 1],
       termin: C.termin.filter((x) => x.proposal_id === p.id).sort((a, b) => a.termin - b.termin),
       mv: { ...m, detail: JSON.parse(m.detail || '{}') }, penilai: C.users.find((u) => u.id === m.penilai_id)?.nama || '',

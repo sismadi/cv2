@@ -279,15 +279,15 @@ function fund(){const t=C.termin.slice().sort((a,b)=>a.proposal_id.localeCompare
 
 /* ---- Cetak sampul + halaman pengesahan (Lampiran 1 & 2) ---- */
 function cetak(id){const p=full(id),s=SK[p.skema],i=p.isi,k=i.ketua,r=(a,b)=>`<tr><td width="35%">${a}</td><td>${b}</td></tr>`;
- $('#pa').innerHTML=`<div style="text-align:center;padding:80px 0;page-break-after:always;font-family:'Times New Roman',serif"><h2>PROPOSAL<br>${s.n.toUpperCase()}<br>UNIVERSITAS IPWIJA</h2><h3 style="margin:60px 0">${esc(p.judul)}</h3><p>PROGRAM STUDI ${esc(k.prodi)}<br>UNIVERSITAS IPWIJA<br>${p.tahun}</p><small>Sampul softcover warna ${s.sampul}, tulisan hitam</small></div>
+ $('#pa').innerHTML=`<div style="text-align:center;padding:60px 0 80px;page-break-after:always;font-family:'Times New Roman',serif"><img src="/img/logo-ipwija.png" alt="Logo Universitas IPWIJA" style="width:120px;height:120px;margin-bottom:30px"><h2>PROPOSAL<br>${s.n.toUpperCase()}<br>UNIVERSITAS IPWIJA</h2><h3 style="margin:60px 0">${esc(p.judul)}</h3><p>PROGRAM STUDI ${esc(k.prodi)}<br>UNIVERSITAS IPWIJA<br>${p.tahun}</p><small>Sampul softcover warna ${s.sampul}, tulisan hitam</small></div>
  <div style="font-family:'Times New Roman',serif"><h3 style="text-align:center">HALAMAN PENGESAHAN<br>${s.n.toUpperCase()}<br>UNIVERSITAS IPWIJA</h3><table style="width:100%;border-collapse:collapse">${r('Judul',esc(p.judul))}${r('Manfaat sosial ekonomi',esc(i.manfaat))}
  ${r('Ketua',`${esc(k.nama)}<br>Jabatan fungsional: ${k.jab||'–'}<br>Program studi: ${esc(k.prodi)}<br>SINTA ID: ${esc(k.sinta)}<br>HP: ${esc(k.hp)} · ${esc(k.email)}`)}${p.ag.map((a,n)=>r('Anggota '+(n+1),`${esc(a.nama)}<br>SINTA ID: ${esc(a.sinta)} · ${esc(a.prodi)}`)).join('')}
  ${r('Jumlah mahasiswa / alumni terlibat',p.jml_mahasiswa+' / '+(i.alumni||0))}${r('Lokasi kegiatan',esc(i.lokasi))}${r('Lama kegiatan',s.dur)}${r('Biaya',rp(p.anggaran))}${r('Sumber dana','Universitas IPWIJA')}</table>
  <p style="margin-top:30px">Jakarta, ${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</p><table style="width:100%;border:0"><tr><td style="border:0">Menyetujui,<br>Kepala LPPM Universitas IPWIJA<br><br><br><br>Dr. Ir. Titing Widyastuti, MM.<br>NIDN</td><td style="border:0">Ketua,<br><br><br><br><br>${esc(k.nama)}<br>NIDN</td></tr></table></div>`;window.print()}
 
 /* ---- Unduh PDF (proposal / laporan akhir) — adapter ke public/js/pdf-laporan.js ---- */
-function unduhPdf(id,jenis){const p=full(id),s=SK[p.skema];
- try{PDFLaporan.download({jenis,p,s,bab:BAB[s.bab],rab:RAB,termin:C.termin.filter(t=>t.proposal_id===id).sort((a,b)=>a.termin-b.termin),review:C.review.filter(r=>r.proposal_id===id)})}
+async function unduhPdf(id,jenis){const p=full(id),s=SK[p.skema];
+ try{await PDFLaporan.download({jenis,p,s,bab:BAB[s.bab],rab:RAB,termin:C.termin.filter(t=>t.proposal_id===id).sort((a,b)=>a.termin-b.termin),review:C.review.filter(r=>r.proposal_id===id)})}
  catch(e){console.error(e);warn('Gagal membuat PDF: '+e.message)}}
 
 /* ---- Basis data: ekspor untuk migrasi ke D1 ---- */
